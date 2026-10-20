@@ -1,6 +1,6 @@
-// DayBoost service worker: offline app shell + notification clicks.
+// Tidy Day service worker: offline app shell + notification clicks.
 // Bump CACHE when you change any file so phones pick up the new version.
-const CACHE = 'dayboost-v1';
+const CACHE = 'tidyday-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -23,10 +23,22 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Stale-while-revalidate: open instantly from cache, refresh in the background.
+// The page itself: network first so updates show right away, cache when offline.
+// Everything else: stale-while-revalidate (instant from cache, refreshed in the background).
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
+  if (req.mode === 'navigate') {
+    e.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put('./index.html', copy)); }
+          return res;
+        })
+        .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
   e.respondWith(
     caches.open(CACHE).then(async (cache) => {
       const key = req.mode === 'navigate' ? './index.html' : req;

@@ -3,34 +3,39 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DayBoost</title>
-<meta name="description" content="Daily non-negotiables, to-dos, appointments and reminders. Your data stays on your phone.">
-<meta name="theme-color" content="#0f8b6c">
+<title>Tidy Day</title>
+<meta name="description" content="A calm daily planner: one timeline for tasks, habits and appointments, with reminders, focus timer and daily review. Your data stays on your phone.">
+<meta name="theme-color" content="#f2efe8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a1e1d" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="DayBoost">
+<meta name="apple-mobile-web-app-title" content="Tidy Day">
 <style>
+/* Soft, low-glare palette: warm cream + sage in light, soft slate (never pure black) in dark. */
 :root{
-  --bg:#f5f4ef;--card:#fff;--ink:#1d2421;--mute:#6b746f;--line:#e7e5dd;
-  --accent:#0f8b6c;--accent-ink:#fff;--soft:#e1f2eb;
-  --warn:#b4480f;--warn-soft:#fcece1;--done:#a0a8a3;
-  --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 18px rgba(0,0,0,.04);
+  --bg:#f2efe8;--card:#faf8f3;--ink:#2f3a36;--mute:#6c7872;--line:#e3ded3;
+  --accent:#5a8a72;--accent-ink:#fbfaf6;--warn:#a5633a;--done:#a3aaa5;
+  --shadow:0 1px 2px rgba(60,50,30,.05),0 6px 20px rgba(60,50,30,.05);color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
-  :root{
-    --bg:#0f1211;--card:#181c1a;--ink:#e7ebe8;--mute:#98a29c;--line:#28302c;
-    --accent:#3cc79e;--accent-ink:#05261b;--soft:#16322a;
-    --warn:#f59a5b;--warn-soft:#30200f;--done:#5d6862;--shadow:none;
+  :root:not([data-theme=light]){
+    --bg:#1a1e1d;--card:#222827;--ink:#d8dfdb;--mute:#929f99;--line:#323a37;
+    --accent:#8fc0a5;--accent-ink:#15211b;--warn:#deaa83;--done:#66716b;--shadow:none;color-scheme:dark;
   }
 }
+:root[data-theme=dark]{
+  --bg:#1a1e1d;--card:#222827;--ink:#d8dfdb;--mute:#929f99;--line:#323a37;
+  --accent:#8fc0a5;--accent-ink:#15211b;--warn:#deaa83;--done:#66716b;--shadow:none;color-scheme:dark;
+}
+:root{--soft:color-mix(in srgb,var(--accent) 15%,var(--card));--warn-soft:color-mix(in srgb,var(--warn) 14%,var(--card))}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);
-  font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif}
-body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+  font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
+body{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
 button{font:inherit;color:inherit;cursor:pointer}
 [hidden]{display:none!important}
 .wrap{max-width:560px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 16px 24px}
@@ -38,87 +43,165 @@ button{font:inherit;color:inherit;cursor:pointer}
 /* header */
 .hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 4px}
 .hdr .date{font-size:13px;color:var(--mute);font-weight:500}
-.hdr h1,.ttl{font-size:26px;line-height:1.15;margin:2px 0 0;letter-spacing:-.01em}
+.hdr h1,.ttl{font-size:26px;line-height:1.2;margin:2px 0 0;letter-spacing:-.01em;font-weight:700}
 .streak{font-size:13px;color:var(--warn);font-weight:600;margin-top:4px}
 .ring{position:relative;width:62px;height:62px;flex:none}
 .ring svg{display:block}
 .ring .trk{fill:none;stroke:var(--line);stroke-width:6}
 .ring .bar{fill:none;stroke:var(--accent);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .4s}
 .ring span{position:absolute;inset:0;display:grid;place-items:center;font-size:14px;font-weight:700}
-.lead{color:var(--mute);margin:6px 0 10px}
+.lead{color:var(--mute);margin:6px 0 12px}
 
 /* cards & rows */
 .card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);margin:14px 0;overflow:hidden}
-.card h2{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0;padding:14px 16px 8px;
+.card h2,.sect{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0;padding:14px 16px 8px;
   font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
-.card h2 .count{font-variant-numeric:tabular-nums}
+.sect{padding:18px 2px 2px}
+.count{font-variant-numeric:tabular-nums}
 .pad{padding:12px 16px}
 .note{font-size:13px;color:var(--mute)}
 .empty{padding:4px 16px 14px;font-size:14px;color:var(--mute)}
 .row{display:flex;align-items:center;gap:12px;padding:10px 8px 10px 14px;border-top:1px solid var(--line)}
 .card h2 + .row,.card h2 + .note + .row{border-top:0}
 .body{flex:1;min-width:0}
-.title{font-weight:500;overflow-wrap:anywhere}
-.desc{font-size:13px;color:var(--mute)}
-.sub{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:4px;font-size:13px;color:var(--mute)}
-.row.done .title{text-decoration:line-through;color:var(--done)}
-.check{flex:none;width:32px;height:32px;border-radius:50%;border:2px solid var(--line);background:none;
+.title{font-weight:600;overflow-wrap:anywhere}
+.sub{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:2px;font-size:13px;color:var(--mute)}
+.row.done .title,.blk.done .title{text-decoration:line-through;color:var(--done)}
+.check{flex:none;width:32px;height:32px;border-radius:50%;border:2px solid color-mix(in srgb,var(--ink) 22%,transparent);background:var(--card);
   display:grid;place-items:center;color:transparent;padding:0;font-size:12px;font-weight:700;transition:.15s}
-.check:active{transform:scale(.9)}
+.check:active{transform:scale(.88)}
 .check.water{color:var(--accent);border-color:var(--soft);background:var(--soft)}
-.row.done .check{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.icon-btn{flex:none;width:38px;height:38px;border:0;border-radius:12px;background:none;color:var(--mute);display:grid;place-items:center;padding:0}
+.done > .check,.done .bc .check{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.icon-btn{flex:none;width:36px;height:36px;border:0;border-radius:12px;background:none;color:var(--mute);display:grid;place-items:center;padding:0}
 .icon-btn:active{background:var(--line)}
 .bell.on{color:var(--accent);background:var(--soft)}
-.badge{font-size:11px;font-weight:700;background:var(--warn-soft);color:var(--warn);padding:2px 8px;border-radius:99px}
-.tag{font-size:11px;font-weight:600;background:var(--bg);border:1px solid var(--line);padding:1px 8px;border-radius:99px}
+.badge{font-size:11px;font-weight:700;background:var(--warn-soft);color:var(--warn);padding:1px 8px;border-radius:99px}
+.tag{font-size:11px;font-weight:600;background:var(--bg);border:1px solid var(--line);padding:0 8px;border-radius:99px}
 .link{background:none;border:0;padding:0;color:var(--accent);font-weight:600;font-size:13px}
 
+/* timeline */
+.blk{display:flex;gap:10px;align-items:stretch;margin:8px 0}
+.tcol{width:66px;flex:none;text-align:right;font-size:12px;color:var(--mute);padding-top:11px;font-variant-numeric:tabular-nums;line-height:1.3}
+.tcol b{display:block;color:var(--ink);font-size:13px;font-weight:700}
+.bc{flex:1;min-width:0;display:flex;align-items:center;gap:8px;padding:9px 8px 9px 10px;border-radius:16px;cursor:pointer;
+  background:color-mix(in srgb,var(--c) 17%,var(--card));border:1px solid color-mix(in srgb,var(--c) 32%,var(--line));border-left:5px solid var(--c)}
+.blk.done .bc{opacity:.62}
+.ico{font-size:21px;width:30px;text-align:center;flex:none}
+.gap{display:flex;gap:8px;align-items:center;margin:2px 0;color:var(--mute);font-size:13px}
+.gap .tcol{padding:0}
+.gap .ln{flex:1;border-top:1.5px dashed var(--line)}
+.nowline{display:flex;align-items:center;gap:8px;color:var(--warn);font-size:12px;font-weight:700;margin:8px 0}
+.nowline .tcol{padding:0;color:var(--warn)}
+.nowline::after{content:'';flex:1;height:2px;background:var(--warn);border-radius:2px;opacity:.7}
+.nowcard .pad{display:grid;gap:8px}
+.nl{display:flex;align-items:center;gap:10px}
+.nl .k{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);width:38px;flex:none}
+.nl .v{flex:1;min-width:0}
+details.card summary{list-style:none;cursor:pointer}
+details.card summary::-webkit-details-marker{display:none}
+details.card summary h2::after{content:'▾';margin-left:6px}
+details[open].card summary h2::after{content:'▴'}
+
+/* week strip */
+.strip{display:flex;align-items:center;gap:4px;margin:10px 0 2px}
+.strip .days{display:flex;flex:1;gap:4px}
+.dchip{flex:1;border:1px solid transparent;background:none;border-radius:14px;padding:6px 0;display:grid;gap:1px;justify-items:center;font-size:11px;color:var(--mute);font-weight:600}
+.dchip b{font-size:16px;color:var(--ink)}
+.dchip.today b{color:var(--accent)}
+.dchip.on{background:var(--accent);color:var(--accent-ink)}
+.dchip.on b{color:var(--accent-ink)}
+.dchip i{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.5}
+.dchip i.none{opacity:0}
+
 /* inputs */
-input,select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0;width:100%}
-input:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px}
-.sub input[type=time]{width:auto;padding:2px 6px;border-radius:8px;font-size:16px;min-height:30px;color:var(--ink)}
-.sub select{width:auto;padding:2px 6px;border-radius:8px}
-input.plain{border:0;background:none;padding:0;font-weight:500;border-radius:4px}
-input.emoji{width:46px;flex:none;text-align:center;font-size:20px;padding:6px 0}
+input,select,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
+input:disabled{opacity:.45}
+.sub input[type=time]{width:auto;padding:1px 6px;border-radius:8px;min-height:30px}
 label{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--mute)}
-.stack{display:grid;gap:12px}
+label.inline{display:flex;align-items:center;gap:8px;font-weight:500;color:var(--ink);font-size:15px}
+label.inline input{width:20px;height:20px;accent-color:var(--accent)}
+.lbl{font-size:13px;font-weight:600;color:var(--mute);margin-bottom:6px}
+.stack{display:grid;gap:14px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 form.add{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);align-items:center}
 form.add input[name=text]{flex:1}
-form.add input[type=time]{width:112px;flex:none;padding:10px 6px}
 .btn{border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-weight:700;padding:11px 16px;white-space:nowrap}
 .btn.ghost{background:var(--soft);color:var(--accent)}
 .btn.danger{background:var(--warn-soft);color:var(--warn)}
 .btn.big{padding:14px;font-size:17px;width:100%}
+.btn.sm{padding:6px 12px;font-size:13px;border-radius:10px}
 .btn.sq{padding:0;width:44px;height:44px;flex:none;display:grid;place-items:center}
 .btns{display:flex;gap:8px;flex-wrap:wrap}
 
-/* pills & chips */
+/* chips, segmented, swatches */
 .pills{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 14px}
-.pill{font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:4px 10px}
-.now{background:linear-gradient(135deg,var(--soft),var(--card) 70%)}
-.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+.pill{font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:3px 10px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
-.chip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:8px 14px;font-size:14px;font-weight:600}
+.chips.wrap{flex-wrap:wrap;overflow:visible}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:7px 13px;font-size:14px;font-weight:600}
 .chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.wrapchips{flex-wrap:wrap;overflow:visible}
+.chip:disabled{opacity:.5}
+.seg{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:none;padding:8px 4px;border-radius:9px;font-weight:600;font-size:14px;color:var(--mute)}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.swatches{display:flex;gap:10px;flex-wrap:wrap}
+.sw{width:32px;height:32px;border-radius:50%;border:0;background:var(--c);padding:0}
+.sw.on{outline:2.5px solid var(--ink);outline-offset:2px}
+.icongrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:4px}
+.icongrid button{height:44px;border:0;border-radius:10px;background:var(--bg);font-size:22px}
+.icongrid button.on{background:var(--soft);outline:2px solid var(--accent)}
+.titlebox{display:flex;gap:8px;align-items:center;padding:8px;border-radius:16px;background:color-mix(in srgb,var(--c) 17%,var(--card));border-left:5px solid var(--c)}
+.titlebox input{border:0;background:none;font-size:18px;font-weight:600;padding:8px 4px}
+.icobtn{width:48px;height:48px;border:0;border-radius:12px;background:var(--card);font-size:24px;flex:none}
 
-/* install & banners */
+/* week view */
+.wday h2{cursor:pointer}
+.wday.today{border-color:var(--accent)}
+.wrow{display:flex;align-items:center;gap:8px;padding:7px 16px;border-top:1px solid var(--line);font-size:14px;cursor:pointer}
+.wrow .dot{width:8px;height:8px;border-radius:50%;background:var(--c);flex:none}
+.wrow .t{width:64px;flex:none;color:var(--mute);font-size:12px;font-variant-numeric:tabular-nums}
+.wrow.done span:last-child{text-decoration:line-through;color:var(--done)}
+.bar{height:6px;border-radius:6px;background:var(--line);overflow:hidden;margin:0 16px 12px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:6px}
+
+/* focus */
+.fring{position:relative;width:240px;height:240px;margin:6px auto 14px}
+.fring svg{display:block}
+.fring .trk{fill:none;stroke:var(--line);stroke-width:10}
+.fring .prog{fill:none;stroke:var(--accent);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.fring.brk .prog{stroke:var(--warn)}
+.fin{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:2px}
+.clock{font-size:52px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.1}
+.phase{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.stats b{display:block;font-size:22px}
+.center{text-align:center}
+.center .btns{justify-content:center}
+
+/* banners, nav, fab, sheet, toast */
 .install .x{position:absolute;top:6px;right:6px}
 .install p,.banner p{margin:6px 0 10px;font-size:14px;color:var(--mute)}
 .install svg{vertical-align:-3px}
-.banner{border-color:var(--warn-soft)}
-
-/* nav */
+.review{border-color:color-mix(in srgb,var(--warn) 40%,var(--line))}
+.review .btns{margin-top:6px}
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:center;
-  background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+  background:color-mix(in srgb,var(--card) 90%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
 nav.tabs > div{display:flex;width:100%;max-width:560px}
-nav button{flex:1;border:0;background:none;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;font-size:11px;font-weight:600}
+nav button{position:relative;flex:1;border:0;background:none;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;font-size:11px;font-weight:600}
 nav button.on{color:var(--accent)}
-
-/* onboarding */
+nav .dotn{position:absolute;top:2px;left:calc(50% + 8px);min-width:16px;height:16px;border-radius:8px;background:var(--warn);color:var(--card);font-size:10px;line-height:16px;padding:0 4px}
+.fab{position:fixed;right:max(16px,calc(50% - 264px));bottom:calc(80px + env(safe-area-inset-bottom));z-index:6;width:58px;height:58px;border-radius:20px;border:0;
+  background:var(--accent);color:var(--accent-ink);box-shadow:0 8px 24px rgba(30,40,35,.22);display:grid;place-items:center}
+.sheet{position:fixed;inset:0;z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.sheet-bg{position:absolute;inset:0;background:rgba(18,24,21,.42)}
+.sheet-panel{position:relative;width:100%;max-width:560px;max-height:92vh;overflow:auto;background:var(--card);border-radius:24px 24px 0 0;
+  padding:8px 16px calc(24px + env(safe-area-inset-bottom));animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;position:sticky;top:-8px;background:var(--card);padding:10px 0;z-index:1}
+.sheet-head .link{font-size:16px}
 .ob{max-width:520px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}
 .ob .logo{width:72px;height:72px;border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}
 .ob .logo img{width:100%;display:block}
@@ -126,12 +209,9 @@ nav button.on{color:var(--accent)}
 .steps{font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.07em}
 .obnav{display:flex;gap:10px;margin-top:18px}
 .obnav .btn{flex:1;padding:14px}
-.center{text-align:center}
-
-/* toast */
-#toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translate(-50%,-150%);z-index:20;
+#toast{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translate(-50%,-160%);z-index:40;
   width:min(92vw,440px);background:var(--ink);color:var(--bg);border-radius:16px;padding:12px 16px;font-size:14px;
-  box-shadow:0 10px 30px rgba(0,0,0,.25);transition:transform .3s}
+  box-shadow:0 10px 30px rgba(0,0,0,.22);transition:transform .3s}
 #toast.show{transform:translate(-50%,0)}
 #toast div{opacity:.85;margin-top:4px}
 </style>
@@ -140,20 +220,22 @@ nav button.on{color:var(--accent)}
 <div id="ob" hidden></div>
 <div id="app" hidden>
   <main class="wrap" id="view"></main>
+  <button class="fab" id="fab" data-a="add" aria-label="Add"><span data-icon="plus"></span></button>
   <nav class="tabs" aria-label="Sections"><div>
     <button data-a="tab" data-id="today"><span data-icon="sun"></span>Today</button>
-    <button data-a="tab" data-id="plan"><span data-icon="list"></span>Plan</button>
-    <button data-a="tab" data-id="sched"><span data-icon="cal"></span>Schedule</button>
+    <button data-a="tab" data-id="week"><span data-icon="cal"></span>Week</button>
+    <button data-a="tab" data-id="focus"><span data-icon="timer"></span>Focus</button>
     <button data-a="tab" data-id="me"><span data-icon="user"></span>Me</button>
   </div></nav>
 </div>
+<div class="sheet" id="sheet" hidden><div class="sheet-bg" data-a="closeSheet"></div><div class="sheet-panel" id="sheetPanel" role="dialog" aria-modal="true"></div></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <input type="file" id="restoreFile" accept=".json,application/json" data-c="restore" hidden>
 
 <script>
 'use strict';
 /* ---------- helpers ---------- */
-const KEY = 'dayboost:v1';
+const KEY = 'tidyday:v2', OLD_KEY = 'dayboost:v1';
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -162,10 +244,13 @@ const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate(
 const today = () => ymd(new Date());
 const addDays = (s, n) => { const d = new Date(s + 'T00:00'); d.setDate(d.getDate() + n); return ymd(d); };
 const daysBetween = (a, b) => Math.round((new Date(b + 'T00:00') - new Date(a + 'T00:00')) / 864e5);
+const dow = (s) => new Date(s + 'T00:00').getDay();
+const startOfWeek = (s) => addDays(s, -((dow(s) + 6) % 7));
 const toMin = (s) => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
-const fromMin = (m) => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+const fromMin = (m) => `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`;
 const nowMin = () => { const d = new Date(); return d.getHours() * 60 + d.getMinutes(); };
 const fmtTime = (s) => { if (!s) return ''; let [h, m] = s.split(':').map(Number); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return `${h}:${pad(m)} ${ap}`; };
+const fmtDur = (m) => m < 60 ? `${m} min` : m % 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m / 60} hr`;
 const fmtDay = (s) => {
   const t = today();
   if (s === t) return 'Today';
@@ -173,87 +258,131 @@ const fmtDay = (s) => {
   if (s === addDays(t, -1)) return 'Yesterday';
   return new Date(s + 'T00:00').toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
 };
-const weekday = (s, style = 'long') => new Date(s + 'T00:00').toLocaleDateString(undefined, { weekday: style });
-const BEFORE = { 0: 'At the time', 10: '10 min before', 30: '30 min before', 60: '1 hour before', 120: '2 hours before', 1440: '1 day before' };
-const REPEAT = { 0: 'One-time', 1: 'Daily', 3: 'Every 3 days', 7: 'Weekly', 14: 'Every 2 weeks', 30: 'Monthly' };
+const longDate = (s) => new Date(s + 'T00:00').toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const svg = (p, w = 22) => `<svg viewBox="0 0 24 24" width="${w}" height="${w}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
 const I = {
   check: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
-  bell: svg('<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>', 20),
-  bellOff: svg('<path d="M8.7 3A6 6 0 0 1 18 8c0 2.7.4 4.6 1 6"/><path d="M17 17H3s3-2 3-9c0-.8.1-1.5.4-2.2"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="M3 3l18 18"/>', 20),
+  bell: svg('<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>', 18),
+  bellOff: svg('<path d="M8.7 3A6 6 0 0 1 18 8c0 2.7.4 4.6 1 6"/><path d="M17 17H3s3-2 3-9c0-.8.1-1.5.4-2.2"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="M3 3l18 18"/>', 18),
   trash: svg('<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/>', 18),
-  plus: svg('<path d="M12 5v14M5 12h14"/>', 20),
+  plus: svg('<path d="M12 5v14M5 12h14"/>', 24),
   share: svg('<path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>', 16),
+  left: svg('<path d="M15 18l-6-6 6-6"/>', 20),
+  right: svg('<path d="M9 18l6-6-6-6"/>', 20),
   sun: svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
-  list: svg('<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/>'),
   cal: svg('<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'),
+  inbox: svg('<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>'),
+  timer: svg('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>'),
   user: svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'),
 };
 
+/* Muted, low-saturation task colours. */
+const COLORS = { sage: '#86b39b', sky: '#8fb2d4', lavender: '#b2a5d6', peach: '#e2b193', butter: '#d6c07c', rose: '#d99ea9', teal: '#7fb8b2', slate: '#a2acb5' };
+const ACCENTS = { sage: ['#5a8a72', '#8fc0a5'], ocean: ['#4c7896', '#8fb9d6'], lavender: ['#6d619e', '#b4a8e0'], clay: ['#99654a', '#e0ae92'] };
+const col = (c) => COLORS[c] || COLORS.sage;
+const ICONS = ['📝', '✅', '💧', '🏋️', '🏃', '⚽', '🏸', '🚶', '🧘', '🧴', '🥚', '🍎', '🥗', '🍽️', '☕', '💊', '💬', '📞', '👪', '❤️', '📚', '💻', '💼', '🧠', '📧', '🧹', '🧺', '🛒', '💳', '🪴', '🐶', '🦷', '🏥', '✂️', '🎂', '✈️', '🚗', '🎵', '🎨', '🎮', '🛏️', '🌙', '☀️', '⭐'];
+const DURS = [0, 15, 30, 45, 60, 90, 120, 180];
+const REMS = [[0, 'At start'], [5, '5 min before'], [10, '10 min'], [15, '15 min'], [30, '30 min'], [60, '1 hour'], [1440, '1 day']];
+const REPEATS = { none: 'Once', daily: 'Daily', weekdays: 'Weekdays', weekly: 'Weekly', monthly: 'Monthly' };
+const KINDS = { task: 'Task', habit: 'Habit', appt: 'Appointment' };
+const CHORE_EVERY = { 0: 'One-time', 1: 'Daily', 3: 'Every 3 days', 7: 'Weekly', 14: 'Every 2 weeks', 30: 'Monthly' };
+const MODES = { pomo: { n: 'Pomodoro', w: 25, b: 5 }, quick: { n: 'Quick', w: 15, b: 3 }, deep: { n: 'Deep work', w: 50, b: 10 }, long: { n: 'Long', w: 90, b: 15 } };
+
 /* ---------- data ---------- */
-const DEFAULT_HABITS = [
-  { id: 'water', icon: '💧', name: 'Drink water', desc: 'Tap the circle for each glass', time: '09:00', reminder: true, goal: 8, repeatHours: 2, endTime: '21:00' },
-  { id: 'workout', icon: '🏋️', name: 'Workout with weight training', time: '07:00', reminder: true },
-  { id: 'cardio', icon: '🏃', name: 'Cardio or sports', time: '18:00', reminder: true },
-  { id: 'selfcare', icon: '🧴', name: 'Self-care routine', time: '21:30', reminder: true },
-  { id: 'protein', icon: '🥚', name: 'Protein-rich meal', time: '13:00', reminder: true },
-  { id: 'fruit', icon: '🍎', name: 'At least 1 fruit', time: '16:00', reminder: false },
-  { id: 'quiet', icon: '🧘', name: 'Personal quiet time', time: '06:30', reminder: false },
-  { id: 'connect', icon: '💬', name: 'Connect with someone who matters', desc: 'At least 5 minutes', time: '20:00', reminder: true },
-  { id: 'plan', icon: '📝', name: "Plan tomorrow's to-dos", desc: 'Done automatically once tomorrow has a to-do', time: '22:00', reminder: true },
+const CORE = [
+  ['water', '💧', 'Drink water', '09:00', 5, 'sky', true, { goal: 8, every: 2, until: '21:00', note: 'Tap the circle for each glass' }],
+  ['workout', '🏋️', 'Workout with weight training', '07:00', 45, 'sage', true],
+  ['cardio', '🏃', 'Cardio or sports', '18:00', 30, 'teal', true],
+  ['selfcare', '🧴', 'Self-care routine', '21:30', 20, 'lavender', true],
+  ['protein', '🥚', 'Protein-rich meal', '13:00', 30, 'peach', true],
+  ['fruit', '🍎', 'At least 1 fruit', '16:00', 0, 'rose', false],
+  ['quiet', '🧘', 'Personal quiet time', '06:30', 15, 'lavender', false],
+  ['connect', '💬', 'Connect with someone who matters', '20:00', 10, 'butter', true, { note: 'At least 5 minutes' }],
+  ['plan', '📝', 'Plan tomorrow', '22:00', 10, 'slate', true, { note: 'Ticks itself once tomorrow has a task' }],
 ];
-const LOW_SUGGESTIONS = [['🧹 House cleaning', 7], ['🧺 Laundry', 7], ['🛒 Groceries', 7], ['💳 Pay bills', 30], ['🪴 Water plants', 3], ['📦 Declutter a drawer', 0]];
+const coreHabits = () => CORE.map(([id, icon, title, time, dur, color, on, extra]) => ({
+  id, kind: 'habit', core: true, icon, title, time, dur, color, date: today(), repeat: { t: 'daily', days: [] }, rem: on ? [0] : [], done: {}, note: '', ...(extra || {}),
+}));
+const CHORE_SUGGESTIONS = [['🧹', 'House cleaning', 7], ['🧺', 'Laundry', 7], ['🛒', 'Groceries', 7], ['💳', 'Pay bills', 30], ['🪴', 'Water plants', 3], ['📦', 'Declutter a drawer', 0]];
 
 const defaults = () => ({
-  v: 1, profile: null, habits: DEFAULT_HABITS.map((h) => ({ ...h })),
-  settings: { checkinHours: 3, dayStart: '08:00', dayEnd: '22:00' },
-  todos: {}, appts: [], low: [], log: {}, fired: {}, lastDay: null, hideInstall: false,
+  v: 2, profile: null, items: coreHabits(), chores: [], fired: {}, lastDay: null, focusLog: {},
+  focus: { mode: 'pomo', phase: 'idle', endAt: 0, left: 0, paused: false, taskId: '', rounds: 0, roundsDay: '' },
+  settings: { theme: 'auto', accent: 'sage', sound: 'chime', checkinHours: 3, dayStart: '07:00', dayEnd: '22:00', autoCarry: false, hideInstall: false },
 });
+
+/* Bring data from the first version of the app forward. */
+function migrate(o) {
+  const n = defaults();
+  n.profile = o.profile || null;
+  n.settings.checkinHours = o.settings?.checkinHours ?? 3;
+  n.items = (o.habits || []).map((h) => {
+    const base = coreHabits().find((c) => c.id === h.id);
+    const it = { ...(base || { kind: 'habit', color: 'sage', dur: 15, repeat: { t: 'daily', days: [] }, date: today(), note: '' }),
+      id: h.id, icon: h.icon, title: h.name, time: h.time || '', rem: h.reminder ? [0] : [], core: !h.custom, done: {} };
+    if (h.goal) Object.assign(it, { goal: h.goal, every: h.repeatHours || 0, until: h.endTime || '21:00' });
+    return it;
+  });
+  for (const d in o.log || {}) for (const id in o.log[d]) { const it = n.items.find((x) => x.id === id); if (it) it.done[d] = o.log[d][id]; }
+  for (const d in o.todos || {}) (o.todos[d] || []).forEach((x) => {
+    if (x.movedTo) return;
+    n.items.push({ id: x.id, kind: 'task', icon: '📝', color: 'sage', title: x.title, date: d, time: x.time || '', dur: 30, repeat: { t: 'none', days: [] },
+      rem: x.reminder ? [0] : [], done: x.done ? { [d]: true } : {}, note: '', carried: x.carried || 0, from: x.from || '' });
+  });
+  (o.appts || []).forEach((a) => n.items.push({ id: a.id, kind: 'appt', icon: '📅', color: 'peach', title: a.title, date: a.date, time: a.time, dur: 60,
+    repeat: a.repeat === 'weekly' ? { t: 'weekly', days: [dow(a.date)] } : { t: 'none', days: [] }, rem: a.reminder ? [a.before || 0] : [], done: a.doneDates || {}, note: '' }));
+  n.chores = (o.low || []).map((x) => ({ id: x.id, icon: '', title: x.title, every: x.repeat || 0, time: x.time || '', rem: !!x.reminder, done: x.done || null }));
+  n.lastDay = o.lastDay;
+  return n;
+}
 function load() {
-  try { const r = JSON.parse(localStorage.getItem(KEY)); if (r && r.habits) return Object.assign(defaults(), r); } catch (e) {}
+  try { const r = JSON.parse(localStorage.getItem(KEY)); if (r && r.items) return fill(r); } catch (e) {}
+  try { const o = JSON.parse(localStorage.getItem(OLD_KEY)); if (o && o.habits) return migrate(o); } catch (e) {}
   return defaults();
 }
+function fill(r) { const d = defaults(); return { ...d, ...r, settings: { ...d.settings, ...r.settings }, focus: { ...d.focus, ...r.focus } }; }
 let S = load();
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast('Could not save', 'Storage may be full or blocked.'); } }
 
-const hab = (id) => S.habits.find((h) => h.id === id);
-const todosOn = (d) => (S.todos[d] || []).filter((x) => !x.movedTo);
-const findTodo = (d, id) => (S.todos[d] || []).find((x) => x.id === id);
-const dayLog = (d) => S.log[d] || (S.log[d] = {});
-const getCount = (h, d) => Number((S.log[d] || {})[h.id]) || 0;
-function isDone(h, d) {
-  const v = (S.log[d] || {})[h.id];
-  if (h.goal) return (Number(v) || 0) >= h.goal;
-  if (h.id === 'plan') return !!v || (S.todos[addDays(d, 1)] || []).some((x) => !x.movedTo && !x.carried);
+const item = (id) => S.items.find((x) => x.id === id);
+function occurs(it, d) {
+  if (!it.date) return false;
+  const r = it.repeat || { t: 'none' };
+  if (r.t === 'none') return it.date === d;
+  if (d < it.date) return false;
+  const w = dow(d);
+  if (r.t === 'daily') return true;
+  if (r.t === 'weekdays') return w > 0 && w < 6;
+  if (r.t === 'weekly') return (r.days && r.days.length ? r.days : [dow(it.date)]).includes(w);
+  if (r.t === 'monthly') return +d.slice(8) === +it.date.slice(8);
+  return false;
+}
+const byTime = (a, b) => (a.time || '99').localeCompare(b.time || '99');
+const itemsOn = (d) => S.items.filter((it) => occurs(it, d)).sort(byTime);
+const count = (it, d) => Number(it.done[d]) || 0;
+function isDone(it, d) {
+  const v = it.done[d];
+  if (it.goal) return (Number(v) || 0) >= it.goal;
+  if (it.core && it.id === 'plan') return !!v || S.items.some((x) => x.kind !== 'habit' && x.repeat.t === 'none' && x.date === addDays(d, 1));
   return !!v;
 }
-const occursOn = (a, d) => a.repeat === 'weekly' ? d >= a.date && weekday(d) === weekday(a.date) : a.date === d;
-function nextOcc(a, from) {
-  if (a.repeat !== 'weekly') return a.date;
-  const start = a.date > from ? a.date : from;
-  for (let i = 0; i < 7; i++) { const x = addDays(start, i); if (occursOn(a, x)) return x; }
-}
-const apptsOn = (d) => S.appts.filter((a) => occursOn(a, d)).sort((x, y) => x.time.localeCompare(y.time));
-const apptDone = (a, d) => !!(a.doneDates || {})[d];
-const lowDone = (x, d) => !!x.done && (!x.repeat || daysBetween(x.done, d) < x.repeat);
-
+const endOf = (it) => toMin(it.time) + (it.dur || 0);
+const choreDone = (x, d) => !!x.done && (!x.every || daysBetween(x.done, d) < x.every);
+const leftovers = () => S.items.filter((it) => it.kind === 'task' && it.repeat.t === 'none' && it.date && it.date < today() && !it.done[it.date]);
+const repeatLabel = (it) => {
+  const r = it.repeat || {};
+  if (r.t === 'weekly') return 'Every ' + (r.days && r.days.length ? r.days : [dow(it.date)]).sort().map((x) => WD[x]).join(', ');
+  return r.t && r.t !== 'none' ? REPEATS[r.t] : '';
+};
 function remaining(d = today()) {
-  const r = [];
-  S.habits.forEach((h) => { if (!isDone(h, d)) r.push(`${h.icon} ${h.name}${h.goal ? ` (${getCount(h, d)}/${h.goal})` : ''}`); });
-  todosOn(d).forEach((x) => { if (!x.done) r.push(`☐ ${x.title}`); });
-  apptsOn(d).forEach((a) => { if (!apptDone(a, d)) r.push(`📅 ${fmtTime(a.time)} ${a.title}`); });
-  S.low.forEach((x) => { if (!lowDone(x, d)) r.push(`◦ ${x.title}`); });
+  const r = itemsOn(d).filter((it) => !isDone(it, d)).map((it) => `${it.icon} ${it.title}${it.goal ? ` (${count(it, d)}/${it.goal})` : ''}${it.time ? ` · ${fmtTime(it.time)}` : ''}`);
+  S.chores.forEach((x) => { if (!choreDone(x, d)) r.push(`${x.icon || '◦'} ${x.title}`); });
   return r;
 }
-function progress(d = today()) {
-  let done = 0, total = 0;
-  S.habits.forEach((h) => { total++; if (isDone(h, d)) done++; });
-  todosOn(d).forEach((x) => { total++; if (x.done) done++; });
-  apptsOn(d).forEach((a) => { total++; if (apptDone(a, d)) done++; });
-  return { done, total };
-}
-const dayComplete = (d) => S.habits.length && S.habits.every((h) => isDone(h, d));
+function progress(d) { const its = itemsOn(d); return { done: its.filter((it) => isDone(it, d)).length, total: its.length }; }
+const dayComplete = (d) => { const h = S.items.filter((it) => it.kind === 'habit' && occurs(it, d)); return h.length && h.every((it) => isDone(it, d)); };
 function streak() {
   let n = 0, d = today();
   if (dayComplete(d)) n++;
@@ -261,23 +390,48 @@ function streak() {
   while (n < 3650 && dayComplete(d)) { n++; d = addDays(d, -1); }
   return n;
 }
-
-/* Unfinished to-dos from earlier days move into today, keeping their time + reminder. */
+function carry(it, to) { it.from = it.from || it.date; it.carried = (it.carried || 0) + 1; it.date = to; }
 function rollover() {
   const t = today();
   if (S.lastDay === t) return false;
-  Object.keys(S.todos).filter((d) => d < t).sort().forEach((d) => {
-    S.todos[d].forEach((x) => {
-      if (x.done || x.movedTo) return;
-      (S.todos[t] = S.todos[t] || []).push({ ...x, id: uid(), done: false, carried: (x.carried || 0) + 1, from: x.from || d });
-      x.movedTo = t;
-    });
-  });
+  if (S.settings.autoCarry) leftovers().forEach((it) => carry(it, t));
   const cutoff = addDays(t, -2);
   for (const k in S.fired) if (k.slice(0, 10) < cutoff) delete S.fired[k];
   S.lastDay = t;
   save();
   return true;
+}
+
+/* ---------- theme & sound ---------- */
+const darkMQ = matchMedia('(prefers-color-scheme: dark)');
+function applyTheme() {
+  const root = document.documentElement, th = S.settings.theme;
+  if (th === 'auto') root.removeAttribute('data-theme'); else root.dataset.theme = th;
+  const dark = th === 'dark' || (th === 'auto' && darkMQ.matches);
+  const [l, d] = ACCENTS[S.settings.accent] || ACCENTS.sage;
+  root.style.setProperty('--accent', dark ? d : l);
+  root.style.setProperty('--accent-ink', dark ? '#15211b' : '#fbfaf6');
+  document.querySelectorAll('meta[name=theme-color]').forEach((m) => m.setAttribute('content', dark ? '#1a1e1d' : '#f2efe8'));
+}
+darkMQ.addEventListener?.('change', applyTheme);
+
+const SOUNDS = { chime: [[659, 0], [880, .16], [1319, .32]], bell: [[523, 0], [784, 0], [1047, 0]], soft: [[440, 0], [554, .28]], drop: [[988, 0], [740, .1]] };
+let actx;
+function ac() { if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); return actx; }
+document.addEventListener('pointerdown', () => { try { ac(); } catch (e) {} }, { once: true });
+function play(name = S.settings.sound, vol = .18) {
+  if (!name || name === 'off' || !SOUNDS[name]) return;
+  try {
+    const c = ac(), t0 = c.currentTime;
+    SOUNDS[name].forEach(([f, dt]) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0, t0 + dt);
+      g.gain.linearRampToValueAtTime(vol, t0 + dt + .02);
+      g.gain.exponentialRampToValueAtTime(.001, t0 + dt + 1.6);
+      o.connect(g).connect(c.destination); o.start(t0 + dt); o.stop(t0 + dt + 1.7);
+    });
+  } catch (e) {}
 }
 
 /* ---------- notifications & reminders ---------- */
@@ -291,18 +445,19 @@ function notifState() {
 }
 async function askNotif() {
   const st = notifState();
-  if (st === 'ios-install') { toast('Install first for reminders', 'On iPhone, add DayBoost to your Home Screen, then open it from there.'); return; }
+  if (st === 'ios-install') { toast('Install first for reminders', 'On iPhone, add Tidy Day to your Home Screen, then open it from there.'); return; }
   if (st === 'unsupported') { toast('This browser can’t show notifications', 'Reminders will still appear inside the app.'); return; }
   if (st === 'denied') { toast('Notifications are blocked', 'Allow them for this site in your phone/browser settings.'); return; }
   if (st === 'default') {
     const p = await Notification.requestPermission();
-    if (p === 'granted') notify('Reminders are on ✅', 'You’ll get nudges at the times you set.', 'welcome');
+    if (p === 'granted') notify('Reminders are on', 'You’ll get gentle nudges at the times you set.', 'welcome');
     render();
   }
 }
 async function notify(title, body, tag) {
   toast(title, body);
-  if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
+  play();
+  if (navigator.vibrate) navigator.vibrate([120, 80, 120]);
   if (notifState() !== 'granted') return;
   const opts = { body, tag, icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', renotify: true };
   try {
@@ -320,39 +475,35 @@ function checkinSlots() {
 }
 function tick() {
   if (!S.profile) return;
-  if (rollover()) render();
+  const newDay = rollover();
   const d = today(), m = nowMin();
   const due = (key, t) => m >= t && m < t + WINDOW && !S.fired[key];
   const fire = (key, title, body) => { S.fired[key] = 1; notify(title, body, key); };
 
-  S.habits.forEach((h) => {
-    if (!h.reminder || !h.time || isDone(h, d)) return;
-    const times = [toMin(h.time)];
-    if (h.repeatHours) for (let t = times[0] + h.repeatHours * 60; t <= toMin(h.endTime || '21:00'); t += h.repeatHours * 60) times.push(t);
-    times.forEach((t) => {
-      const k = `${d}|h|${h.id}|${t}`;
-      if (due(k, t)) fire(k, `${h.icon} ${h.name}`, h.goal ? `${getCount(h, d)} of ${h.goal} glasses so far.` : (h.desc || 'It’s time. Tap ✓ once it’s done.'));
-    });
-  });
-  todosOn(d).forEach((x) => {
-    if (!x.reminder || !x.time || x.done) return;
-    const k = `${d}|t|${x.id}`;
-    if (due(k, toMin(x.time))) fire(k, `📝 ${x.title}`, x.carried ? `Carried over from ${fmtDay(x.from)}. Let’s finish it today.` : 'To-do reminder');
-  });
-  S.appts.forEach((a) => {
-    if (!a.reminder) return;
+  S.items.forEach((it) => {
+    if (!it.time || !it.rem || !it.rem.length) return;
     [d, addDays(d, 1)].forEach((od) => {
-      if (!occursOn(a, od) || apptDone(a, od)) return;
-      const rt = new Date(new Date(`${od}T${a.time}`) - (a.before || 0) * 60000);
-      if (ymd(rt) !== d) return;
-      const k = `${d}|a|${a.id}|${od}`;
-      if (due(k, rt.getHours() * 60 + rt.getMinutes())) fire(k, `📅 ${a.title}`, `${fmtDay(od)} at ${fmtTime(a.time)}${a.before ? ` (${BEFORE[a.before] || a.before + ' min before'})` : ''}`);
+      if (!occurs(it, od) || isDone(it, od)) return;
+      it.rem.forEach((b) => {
+        const starts = [toMin(it.time)];
+        if (b === 0 && it.every) for (let t = starts[0] + it.every * 60; t <= toMin(it.until || '21:00'); t += it.every * 60) starts.push(t);
+        starts.forEach((st) => {
+          const rt = new Date(new Date(`${od}T${fromMin(st)}`) - b * 60000);
+          if (ymd(rt) !== d) return;
+          const k = `${d}|i|${it.id}|${od}|${b}|${st}`;
+          if (!due(k, rt.getHours() * 60 + rt.getMinutes())) return;
+          const body = b
+            ? `${b >= 1440 ? 'Tomorrow' : `In ${fmtDur(b)}`} at ${fmtTime(it.time)}${it.dur ? ` · ${fmtDur(it.dur)}` : ''}`
+            : it.goal ? `${count(it, od)} of ${it.goal} glasses so far.` : it.note || (it.dur ? `${fmtDur(it.dur)} block. Tap ✓ when done.` : 'It’s time.');
+          fire(k, `${it.icon} ${it.title}`, body);
+        });
+      });
     });
   });
-  S.low.forEach((x) => {
-    if (!x.reminder || !x.time || lowDone(x, d)) return;
-    const k = `${d}|l|${x.id}`;
-    if (due(k, toMin(x.time))) fire(k, x.title, 'Low priority, but it still needs doing.');
+  S.chores.forEach((x) => {
+    if (!x.rem || !x.time || choreDone(x, d)) return;
+    const k = `${d}|c|${x.id}`;
+    if (due(k, toMin(x.time))) fire(k, `${x.icon || '🧹'} ${x.title}`, 'Low priority, but it still needs doing.');
   });
   checkinSlots().forEach((t) => {
     const k = `${d}|s|${t}`;
@@ -362,9 +513,43 @@ function tick() {
     fire(k, `Check-in: ${r.length} left today`, r.slice(0, 6).join('\n') + (r.length > 6 ? `\n+${r.length - 6} more` : ''));
   });
   save();
+  const typing = document.activeElement && document.activeElement.matches('input,select,textarea');
+  if ((newDay || tab === 'today') && $('#sheet').hidden && !typing) render();
 }
 
-/* ---------- small UI pieces ---------- */
+/* ---------- focus timer ---------- */
+const F = () => S.focus;
+const fTotal = () => (F().phase === 'break' ? MODES[F().mode].b : MODES[F().mode].w) * 60;
+const fLeft = () => F().phase === 'idle' ? MODES[F().mode].w * 60 : F().paused ? F().left : Math.max(0, Math.round((F().endAt - Date.now()) / 1000));
+const mmss = (s) => `${pad(Math.floor(s / 60))}:${pad(s % 60)}`;
+function finishPhase(natural) {
+  const f = F(), m = MODES[f.mode], t = today();
+  if (f.phase === 'work') {
+    const mins = natural ? m.w : Math.round((fTotal() - fLeft()) / 60);
+    S.focusLog[t] = (S.focusLog[t] || 0) + mins;
+    if (f.roundsDay !== t) { f.rounds = 0; f.roundsDay = t; }
+    f.rounds++;
+    if (natural) notify('Focus block done 🌿', `Nice. Take a ${m.b}-minute break.`, 'focus');
+    Object.assign(f, { phase: 'break', endAt: Date.now() + m.b * 60000, paused: false });
+  } else {
+    if (natural) notify('Break over', 'Ready for the next focus block?', 'focus');
+    f.phase = 'idle';
+  }
+  save(); render();
+}
+function focusTick() {
+  const f = F();
+  if (f.phase !== 'idle' && !f.paused && Date.now() >= f.endAt) return finishPhase(true);
+  const el = $('#fclock');
+  if (el) {
+    const left = fLeft(), C = 2 * Math.PI * 108;
+    el.textContent = mmss(left);
+    const p = $('#fprog'); if (p) p.setAttribute('stroke-dashoffset', C * (1 - (f.phase === 'idle' ? 0 : 1 - left / fTotal())));
+  }
+  document.title = f.phase !== 'idle' && !f.paused ? `${mmss(fLeft())} · ${f.phase === 'work' ? 'Focus' : 'Break'}` : 'Tidy Day';
+}
+
+/* ---------- UI pieces ---------- */
 let toastTimer;
 function toast(title, body = '') {
   const el = $('#toast');
@@ -373,217 +558,298 @@ function toast(title, body = '') {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), body ? 7000 : 2600);
 }
-const bellBtn = (a, id, on, d = '') =>
-  `<button class="icon-btn bell ${on ? 'on' : ''}" data-a="${a}" data-id="${id}" ${d ? `data-d="${d}"` : ''} aria-pressed="${!!on}" aria-label="${on ? 'Reminder on' : 'Reminder off'}">${on ? I.bell : I.bellOff}</button>`;
-const delBtn = (a, id, d = '') => `<button class="icon-btn" data-a="${a}" data-id="${id}" ${d ? `data-d="${d}"` : ''} aria-label="Delete">${I.trash}</button>`;
-const timeIn = (c, id, v, d = '') => `<input type="time" value="${v || ''}" data-c="${c}" data-id="${id}" ${d ? `data-d="${d}"` : ''} aria-label="Time">`;
-
+const bellBtn = (a, id, on) => `<button class="icon-btn bell ${on ? 'on' : ''}" data-a="${a}" data-id="${id}" aria-pressed="${!!on}" aria-label="${on ? 'Reminder on' : 'Reminder off'}">${on ? I.bell : I.bellOff}</button>`;
+const delBtn = (a, id) => `<button class="icon-btn" data-a="${a}" data-id="${id}" aria-label="Delete">${I.trash}</button>`;
+const chip = (on, a, id, label, extra = '') => `<button type="button" class="chip ${on ? 'on' : ''}" data-a="${a}" data-id="${id}" ${extra}>${label}</button>`;
 function ring({ done, total }) {
   const pct = total ? done / total : 0, C = 2 * Math.PI * 25;
   return `<div class="ring" aria-label="${done} of ${total} done"><svg viewBox="0 0 62 62" width="62" height="62"><circle cx="31" cy="31" r="25" class="trk"/><circle cx="31" cy="31" r="25" class="bar" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - pct)}" transform="rotate(-90 31 31)"/></svg><span>${Math.round(pct * 100)}%</span></div>`;
 }
-function habitRow(h, d) {
-  const done = isDone(h, d), n = getCount(h, d);
-  const check = h.goal
-    ? `<button class="check water" data-a="water" data-id="${h.id}" aria-label="Add a glass">${done ? I.check : n}</button>`
-    : `<button class="check" data-a="habit" data-id="${h.id}" aria-label="Mark done">${I.check}</button>`;
-  return `<div class="row ${done ? 'done' : ''}">${check}<div class="body">
-    <div class="title">${esc(h.icon)} ${esc(h.name)}</div>${h.desc ? `<div class="desc">${esc(h.desc)}</div>` : ''}
-    <div class="sub">${timeIn('htime', h.id, h.time)}
-      ${h.goal ? `<span>${n}/${h.goal} glasses</span>${n ? `<button class="link" data-a="waterMinus" data-id="${h.id}">undo</button>` : ''}` : ''}
-      ${h.repeatHours ? `<span>remind every ${h.repeatHours}h</span>` : ''}
-      ${h.id === 'plan' ? `<button class="link" data-a="tab" data-id="plan">Open planner →</button>` : ''}
-    </div></div>${bellBtn('hbell', h.id, h.reminder)}</div>`;
-}
-function todoRow(x, d) {
-  return `<div class="row ${x.done ? 'done' : ''}"><button class="check" data-a="todo" data-id="${x.id}" data-d="${d}" aria-label="Mark done">${I.check}</button>
-    <div class="body"><div class="title">${esc(x.title)}</div><div class="sub">${timeIn('ttime', x.id, x.time, d)}
-    ${x.carried ? `<span class="badge">↻ from ${esc(fmtDay(x.from))}</span>` : ''}</div></div>
-    ${bellBtn('tbell', x.id, x.reminder, d)}${delBtn('tdel', x.id, d)}</div>`;
-}
-function apptRow(a, d) {
-  const done = apptDone(a, d);
-  return `<div class="row ${done ? 'done' : ''}"><button class="check" data-a="appt" data-id="${a.id}" data-d="${d}" aria-label="Mark done">${I.check}</button>
-    <div class="body"><div class="title">${esc(a.title)}</div><div class="sub"><span>${esc(fmtDay(d))} · ${fmtTime(a.time)}</span>
-    ${a.repeat === 'weekly' ? `<span class="tag">Every ${weekday(a.date)}</span>` : ''}${a.reminder ? `<span>🔔 ${BEFORE[a.before] || ''}</span>` : ''}</div></div>
-    ${bellBtn('abell', a.id, a.reminder)}${delBtn('adel', a.id)}</div>`;
-}
-function lowRow(x, d) {
-  const done = lowDone(x, d);
-  return `<div class="row ${done ? 'done' : ''}"><button class="check" data-a="low" data-id="${x.id}" aria-label="Mark done">${I.check}</button>
-    <div class="body"><div class="title">${esc(x.title)}</div><div class="sub">${timeIn('ltime', x.id, x.time)}
-    <span class="tag">${REPEAT[x.repeat || 0]}</span>${x.done ? `<span>done ${esc(fmtDay(x.done))}</span>` : ''}</div></div>
-    ${bellBtn('lbell', x.id, x.reminder)}${delBtn('ldel', x.id)}</div>`;
-}
-const addTodoForm = (d, ph = 'Add a to-do…') =>
-  `<form class="add" data-f="addTodo" data-d="${d}"><input name="text" placeholder="${ph}" autocomplete="off" enterkeyhint="done"><input type="time" name="time" aria-label="Reminder time (optional)"><button class="btn sq" aria-label="Add">${I.plus}</button></form>`;
-const addLowForm = () =>
-  `<form class="add" data-f="addLow"><input name="text" placeholder="e.g. House cleaning" autocomplete="off"><select name="repeat" style="width:112px;flex:none;padding:10px 6px" aria-label="Repeat">${Object.entries(REPEAT).map(([k, v]) => `<option value="${k}" ${k === '7' ? 'selected' : ''}>${v}</option>`).join('')}</select><button class="btn sq" aria-label="Add">${I.plus}</button></form>`;
 
+function block(it, d, timed = true) {
+  const done = isDone(it, d), n = count(it, d);
+  const check = it.goal
+    ? `<button class="check water" data-a="done" data-id="${it.id}" data-d="${d}" aria-label="Add a glass">${done ? I.check : n}</button>`
+    : `<button class="check" data-a="done" data-id="${it.id}" data-d="${d}" aria-label="Mark done">${I.check}</button>`;
+  const bits = [];
+  if (it.dur) bits.push(fmtDur(it.dur));
+  if (it.goal) bits.push(`${n}/${it.goal} glasses`);
+  const rl = repeatLabel(it); if (rl && it.kind !== 'habit') bits.push(rl);
+  if (it.kind === 'appt') bits.push('Appointment');
+  const on = it.time && it.rem.length;
+  return `<div class="blk ${done ? 'done' : ''}" style="--c:${col(it.color)}">
+    ${timed ? `<div class="tcol"><b>${fmtTime(it.time)}</b>${it.dur ? `<span>${fmtTime(fromMin(Math.min(endOf(it), 1439)))}</span>` : ''}</div>` : ''}
+    <div class="bc" data-a="edit" data-id="${it.id}" role="button" tabindex="0" aria-label="Edit ${esc(it.title)}">
+      <span class="ico">${esc(it.icon)}</span>
+      <div class="body"><div class="title">${esc(it.title)}</div>
+        <div class="sub">${esc(bits.join(' · '))}${it.carried ? `<span class="badge">↻ from ${esc(fmtDay(it.from))}</span>` : ''}</div></div>
+      ${timed ? bellBtn('ibell', it.id, on) : ''}${check}
+    </div></div>`;
+}
+function weekStrip() {
+  const mon = startOfWeek(selDay), t = today();
+  const days = Array.from({ length: 7 }, (_, i) => addDays(mon, i));
+  return `<div class="strip"><button class="icon-btn" data-a="shiftDay" data-id="-7" aria-label="Previous week">${I.left}</button><div class="days">
+    ${days.map((d) => {
+      const busy = S.items.some((it) => it.kind !== 'habit' && occurs(it, d));
+      return `<button class="dchip ${d === selDay ? 'on' : ''} ${d === t ? 'today' : ''}" data-a="pickDay" data-id="${d}">${WD[dow(d)]}<b>${+d.slice(8)}</b><i class="${busy ? '' : 'none'}"></i></button>`;
+    }).join('')}</div><button class="icon-btn" data-a="shiftDay" data-id="7" aria-label="Next week">${I.right}</button></div>`;
+}
+function nowCard() {
+  const d = today(), nm = nowMin();
+  const its = itemsOn(d).filter((i) => i.time && !isDone(i, d));
+  const cur = its.find((i) => i.dur && toMin(i.time) <= nm && nm < endOf(i));
+  const next = its.find((i) => toMin(i.time) > nm);
+  const lines = [];
+  if (cur) lines.push(`<div class="nl"><span class="k">Now</span><span class="v">${esc(cur.icon)} <b>${esc(cur.title)}</b><br><span class="note">${fmtDur(endOf(cur) - nm)} left</span></span><button class="btn sm" data-a="focusItem" data-id="${cur.id}">⏱ Focus</button></div>`);
+  if (next) {
+    const gap = toMin(next.time) - nm;
+    lines.push(`<div class="nl"><span class="k">Next</span><span class="v">${esc(next.icon)} <b>${esc(next.title)}</b><br><span class="note">${fmtTime(next.time)} · in ${fmtDur(gap)}${!cur && gap >= 30 ? ' · you’re free until then' : ''}</span></span></div>`);
+  }
+  if (!lines.length) lines.push(`<div class="nl"><span class="k">Now</span><span class="v">Nothing else on the timeline today. Enjoy the free time 🌿</span></div>`);
+  return `<section class="card nowcard"><div class="pad">${lines.join('')}</div></section>`;
+}
+function timeline(d) {
+  const its = itemsOn(d).filter((i) => i.time);
+  if (!its.length) return `<div class="card"><div class="pad note">Nothing on the timeline yet. Tap ＋ to add a task, habit or appointment.</div></div>`;
+  const isT = d === today(), nm = nowMin(), dayEnd = toMin(S.settings.dayEnd);
+  let html = '', prevEnd = null, nowShown = !isT;
+  const gapRow = (from, mins, until) => `<div class="gap"><span class="tcol"></span><span class="ln"></span><span>☕ ${fmtDur(mins)} free${until ? ' until bedtime' : ''}</span><button class="link" data-a="addAt" data-id="${fromMin(from)}" data-d="${d}">+ Plan</button><span class="ln"></span></div>`;
+  const nowRow = () => `<div class="nowline"><span class="tcol">${fmtTime(fromMin(nm))}</span>Now</div>`;
+  its.forEach((it) => {
+    const s = toMin(it.time);
+    if (prevEnd != null && s - prevEnd >= 60) html += gapRow(prevEnd, s - prevEnd);
+    if (!nowShown && s > nm) { html += nowRow(); nowShown = true; }
+    html += block(it, d);
+    prevEnd = Math.max(prevEnd ?? 0, endOf(it));
+  });
+  if (!nowShown) html += nowRow();
+  if (prevEnd <= dayEnd - 60) html += gapRow(prevEnd, dayEnd - prevEnd, true);
+  return `<div class="tl">${html}</div>`;
+}
+function choreRow(x, d) {
+  const done = choreDone(x, d);
+  return `<div class="row ${done ? 'done' : ''}"><button class="check" data-a="chore" data-id="${x.id}" aria-label="Mark done">${I.check}</button>
+    <div class="body"><div class="title">${esc(x.icon)} ${esc(x.title)}</div><div class="sub"><input type="time" value="${x.time || ''}" data-c="ctime" data-id="${x.id}" aria-label="Reminder time">
+    <span class="tag">${CHORE_EVERY[x.every || 0]}</span>${x.done ? `<span>done ${esc(fmtDay(x.done))}</span>` : ''}</div></div>
+    ${bellBtn('cbell', x.id, x.rem)}${delBtn('cdel', x.id)}</div>`;
+}
+const addChoreForm = () => `<form class="add" data-f="addChore"><input name="text" placeholder="e.g. House cleaning" autocomplete="off">
+  <select name="every" style="width:118px;flex:none;padding:10px 6px" aria-label="Repeat">${Object.entries(CHORE_EVERY).map(([k, v]) => `<option value="${k}" ${k === '7' ? 'selected' : ''}>${v}</option>`).join('')}</select>
+  <button class="btn sq" aria-label="Add">${I.plus}</button></form>`;
 function installBanner(force) {
-  if (standalone || (!force && S.hideInstall)) return '';
+  if (standalone || (!force && S.settings.hideInstall)) return '';
   let body;
-  if (deferredPrompt) body = `<p>Add DayBoost to your home screen. It opens like a normal app and works offline.</p><button class="btn" data-a="install">Install app</button>`;
+  if (deferredPrompt) body = `<p>Add Tidy Day to your home screen. It opens like a normal app and works offline.</p><button class="btn" data-a="install">Install app</button>`;
   else if (isIOS) body = `<p>In Safari, tap <b>Share</b> ${I.share} and then <b>Add to Home Screen</b>. On iPhone you need to do this to get reminders.</p>`;
   else if (isMobile) body = `<p>Open your browser menu <b>⋮</b> and tap <b>Install app</b> or <b>Add to Home screen</b>.</p>`;
   else return '';
   return `<section class="card install"><div class="pad"><strong>📲 Get the app</strong>${body}</div>${force ? '' : `<button class="icon-btn x" data-a="hideInstall" aria-label="Dismiss">✕</button>`}</section>`;
 }
 function notifBanner() {
-  const anyOn = S.habits.some((h) => h.reminder) || S.appts.some((a) => a.reminder);
   const st = notifState();
-  if (!anyOn || st === 'granted') return '';
+  if (st === 'granted' || !S.items.some((it) => it.rem.length && it.time)) return '';
   const msg = {
-    default: ['Turn on reminders', 'Allow notifications so DayBoost can nudge you at your chosen times.', '<button class="btn" data-a="notif">Allow notifications</button>'],
+    default: ['Turn on reminders', 'Allow notifications so Tidy Day can nudge you at your chosen times.', '<button class="btn" data-a="notif">Allow notifications</button>'],
     denied: ['Notifications are blocked', 'Allow them for this app in your phone settings. Until then, reminders only show inside the app.', ''],
-    'ios-install': ['Reminders need the app installed', 'On iPhone: Share → Add to Home Screen, then open DayBoost from your home screen.', ''],
+    'ios-install': ['Reminders need the app installed', 'On iPhone: Share → Add to Home Screen, then open Tidy Day from your home screen.', ''],
     unsupported: ['No notifications in this browser', 'Reminders will appear inside the app while it’s open.', ''],
   }[st];
-  return `<section class="card banner"><div class="pad"><strong>🔔 ${msg[0]}</strong><p>${msg[1]}</p>${msg[2]}</div></section>`;
+  return `<section class="card install"><div class="pad"><strong>🔔 ${msg[0]}</strong><p>${msg[1]}</p>${msg[2]}</div></section>`;
+}
+function reviewCard() {
+  const lo = leftovers().sort((a, b) => a.date.localeCompare(b.date));
+  if (!lo.length) return '';
+  return `<section class="card review"><h2>Daily review <span class="count">${lo.length} left over</span></h2>
+    <div class="note" style="padding:0 16px 6px">Sort what didn’t get done, so nothing piles up. Times and reminders stay.</div>
+    ${lo.map((it) => `<div class="row"><span class="ico">${esc(it.icon)}</span><div class="body"><div class="title">${esc(it.title)}</div>
+      <div class="sub">${esc(fmtDay(it.date))}${it.time ? ` · ${fmtTime(it.time)}` : ''}</div>
+      <div class="btns"><button class="btn sm" data-a="rv" data-id="${it.id}" data-d="today">Today</button><button class="btn sm ghost" data-a="rv" data-id="${it.id}" data-d="tomorrow">Tomorrow</button><button class="btn sm ghost" data-a="rv" data-id="${it.id}" data-d="inbox">Someday</button><button class="btn sm danger" data-a="rv" data-id="${it.id}" data-d="drop">Drop</button></div></div></div>`).join('')}
+    <div class="pad" style="border-top:1px solid var(--line)"><button class="btn ghost" data-a="rvAll">Move all to today</button></div></section>`;
 }
 
 /* ---------- views ---------- */
-let tab = 'today', planDay = null;
+let tab = 'today', selDay = today(), weekStart = null;
 
 function vToday() {
-  const d = today(), r = remaining(d), p = progress(d), st = streak();
+  const d = selDay, t = today(), isT = d === t, p = progress(d), st = streak();
   const hr = new Date().getHours();
   const greet = hr < 5 ? 'Up late' : hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
-  const habitsDone = S.habits.filter((h) => isDone(h, d)).length;
-  const tds = todosOn(d), ap = apptsOn(d);
-  const next = checkinSlots().find((t) => t > nowMin());
-  const soon = S.appts.map((a) => ({ a, d: nextOcc(a, addDays(d, 1)) }))
-    .filter((o) => o.d && o.d > d && daysBetween(d, o.d) <= 7)
-    .sort((x, y) => (x.d + x.a.time).localeCompare(y.d + y.a.time)).slice(0, 3);
-  const lowSorted = [...S.low].sort((x, y) => lowDone(x, d) - lowDone(y, d));
-
+  const anytime = itemsOn(d).filter((i) => !i.time);
+  const chores = [...S.chores].sort((a, b) => choreDone(a, d) - choreDone(b, d));
   return `
   <header class="hdr"><div>
-    <div class="date">${new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}</div>
-    <h1>${greet}, ${esc(S.profile.name.split(' ')[0])}</h1>
-    ${st ? `<div class="streak">🔥 ${st}-day streak</div>` : ''}
+    <div class="date">${longDate(d)}</div>
+    <h1>${isT ? `${greet}, ${esc(S.profile.name.split(' ')[0])}` : esc(fmtDay(d))}</h1>
+    ${isT && st ? `<div class="streak">🔥 ${st}-day habit streak</div>` : ''}
+    ${!isT ? `<button class="link" data-a="pickDay" data-id="${t}">← Back to today</button>` : ''}
   </div>${ring(p)}</header>
-  ${installBanner()}${notifBanner()}
-  ${r.length
-    ? `<section class="card now"><h2>Still to do <span class="count">${r.length}</span></h2>
-       <div class="pills">${r.slice(0, 14).map((x) => `<span class="pill">${esc(x)}</span>`).join('')}${r.length > 14 ? `<span class="pill">+${r.length - 14} more</span>` : ''}</div>
-       ${next != null ? `<div class="note" style="padding:0 16px 12px">Next check-in at ${fmtTime(fromMin(next))}</div>` : ''}</section>`
-    : `<section class="card now"><div class="pad"><strong>All clear for today 🎉</strong><div class="note">Everything’s done. Nice work.</div></div></section>`}
-
-  <section class="card"><h2>Daily non-negotiables <span class="count">${habitsDone}/${S.habits.length}</span></h2>
-    ${S.habits.map((h) => habitRow(h, d)).join('')}</section>
-
-  <section class="card"><h2>Today’s to-dos <span class="count">${tds.filter((x) => x.done).length}/${tds.length}</span></h2>
-    ${tds.length ? '' : '<div class="empty">Nothing yet. Add one below, or plan ahead in the Plan tab.</div>'}
-    ${tds.map((x) => todoRow(x, d)).join('')}${addTodoForm(d)}</section>
-
-  <section class="card"><h2>Appointments <button class="link" data-a="tab" data-id="sched">+ Add</button></h2>
-    ${ap.length ? ap.map((a) => apptRow(a, d)).join('') : '<div class="empty">Nothing scheduled today.</div>'}
-    ${soon.length ? `<div class="note" style="padding:8px 16px 12px;border-top:1px solid var(--line)"><b>Coming up:</b> ${soon.map((o) => `${esc(o.a.title)}, ${esc(fmtDay(o.d))} ${fmtTime(o.a.time)}`).join(' · ')}</div>` : ''}
-  </section>
-
-  <section class="card"><h2>Low priority, still needs doing</h2>
-    ${S.low.length ? '' : '<div class="empty">Things like house cleaning or laundry.</div>'}
-    ${lowSorted.map((x) => lowRow(x, d)).join('')}${addLowForm()}</section>`;
+  ${weekStrip()}
+  ${isT ? installBanner() + notifBanner() + reviewCard() + nowCard() : ''}
+  <div class="sect">Your day</div>
+  ${timeline(d)}
+  ${anytime.length ? `<div class="sect">Anytime</div>${anytime.map((it) => block(it, d, false)).join('')}` : ''}
+  ${isT ? `<section class="card"><h2>When you have time</h2>
+    ${S.chores.length ? '' : '<div class="empty">Low-priority chores like house cleaning.</div>'}
+    ${chores.map((x) => choreRow(x, d)).join('')}${addChoreForm()}</section>${somedayCard()}` : ''}`;
 }
 
-function vPlan() {
-  const t = today(), d = planDay || addDays(t, 1);
-  const days = Array.from({ length: 7 }, (_, i) => addDays(t, i + 1));
-  const list = todosOn(d), unfinished = todosOn(t).filter((x) => !x.done), ap = apptsOn(d);
-  return `
-  <h1 class="ttl">Plan ahead</h1>
-  <p class="lead">Write tomorrow’s to-dos tonight. Anything you don’t finish moves to the next day automatically, reminder included.</p>
-  <div class="chips">${days.map((x, i) => `<button class="chip ${x === d ? 'on' : ''}" data-a="planDay" data-id="${x}">${i === 0 ? 'Tomorrow' : `${weekday(x, 'short')} ${new Date(x + 'T00:00').getDate()}`}</button>`).join('')}</div>
-  <label style="margin-top:6px">Or pick a date<input type="date" min="${addDays(t, 1)}" value="${d}" data-c="planDate"></label>
-
-  <section class="card"><h2>${esc(fmtDay(d))} · ${weekday(d)} <span class="count">${list.length}</span></h2>
-    ${list.length ? '' : '<div class="empty">No to-dos yet. Add a time to get a reminder.</div>'}
-    ${list.map((x) => todoRow(x, d)).join('')}${addTodoForm(d, 'What needs doing?')}</section>
-
-  ${ap.length ? `<section class="card"><h2>Appointments that day</h2>${ap.map((a) => apptRow(a, d)).join('')}</section>` : ''}
-
-  ${unfinished.length ? `<section class="card"><h2>Unfinished today <span class="count">${unfinished.length}</span></h2>
-    <div class="note" style="padding:0 16px 8px">These move to tomorrow at midnight. You can also move them now.</div>
-    ${unfinished.map((x) => todoRow(x, t)).join('')}
-    <div class="pad" style="border-top:1px solid var(--line)"><button class="btn ghost" data-a="moveAll">Move all to tomorrow</button></div></section>` : ''}`;
+function vWeek() {
+  const ws = weekStart || startOfWeek(today()), t = today();
+  const days = Array.from({ length: 7 }, (_, i) => addDays(ws, i));
+  const label = `${new Date(ws + 'T00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} – ${new Date(days[6] + 'T00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}`;
+  return `<div class="hdr"><div><div class="date">Week view</div><h1 class="ttl">${label}</h1></div>
+    <div class="btns"><button class="icon-btn" data-a="shiftWeek" data-id="-7" aria-label="Previous week">${I.left}</button><button class="icon-btn" data-a="shiftWeek" data-id="7" aria-label="Next week">${I.right}</button></div></div>
+    ${ws !== startOfWeek(t) ? `<button class="link" data-a="shiftWeek" data-id="0">This week</button>` : ''}
+    ${days.map((d) => {
+      const its = itemsOn(d), habits = its.filter((i) => i.kind === 'habit'), rest = its.filter((i) => i.kind !== 'habit');
+      const hd = habits.filter((i) => isDone(i, d)).length;
+      return `<section class="card wday ${d === t ? 'today' : ''}"><h2 data-a="openDay" data-id="${d}">${esc(fmtDay(d))}${d === t || d === addDays(t, 1) ? ` · ${WD[dow(d)]}` : ''} <span class="link">Open →</span></h2>
+        ${habits.length ? `<div class="note" style="padding:0 16px 4px">Habits ${hd}/${habits.length}</div><div class="bar"><i style="width:${(hd / habits.length) * 100}%"></i></div>` : ''}
+        ${rest.length ? rest.map((it) => `<div class="wrow ${isDone(it, d) ? 'done' : ''}" style="--c:${col(it.color)}" data-a="edit" data-id="${it.id}"><span class="dot"></span><span class="t">${it.time ? fmtTime(it.time) : 'Anytime'}</span><span>${esc(it.icon)} ${esc(it.title)}</span></div>`).join('') : '<div class="empty">No tasks or appointments.</div>'}
+      </section>`;
+    }).join('')}`;
 }
 
-function vSched() {
-  const t = today();
-  const up = S.appts.map((a) => ({ a, d: nextOcc(a, t) })).filter((o) => o.d && o.d >= t)
-    .sort((x, y) => (x.d + x.a.time).localeCompare(y.d + y.a.time));
-  const past = S.appts.filter((a) => a.repeat !== 'weekly' && a.date < t).sort((x, y) => y.date.localeCompare(x.date));
-  return `
-  <h1 class="ttl">Schedule</h1>
-  <p class="lead">Matches, dentist visits, surgeries, calls… add them once and get reminded.</p>
-  <section class="card"><form class="pad stack" data-f="addAppt">
-    <label>What<input name="text" placeholder="e.g. Football match, Dentist" required autocomplete="off"></label>
-    <div class="grid2"><label>Date<input type="date" name="date" value="${t}" min="${t}" required></label>
-      <label>Time<input type="time" name="time" value="09:00" required></label></div>
-    <div class="grid2"><label>Remind me<select name="before">${Object.entries(BEFORE).map(([k, v]) => `<option value="${k}" ${k === '60' ? 'selected' : ''}>${v}</option>`).join('')}<option value="-1">No reminder</option></select></label>
-      <label>Repeat<select name="repeat"><option value="">Just once</option><option value="weekly">Every week</option></select></label></div>
-    <button class="btn">Add to schedule</button>
-  </form></section>
-  <section class="card"><h2>Upcoming <span class="count">${up.length}</span></h2>
-    ${up.length ? up.map((o) => apptRow(o.a, o.d)).join('') : '<div class="empty">Nothing coming up.</div>'}</section>
-  ${past.length ? `<section class="card"><h2>Past</h2>${past.slice(0, 20).map((a) => apptRow(a, a.date)).join('')}</section>` : ''}`;
+/* Inbox: ideas with no day yet. Lives at the bottom of Today so there's one place to look. */
+function somedayCard() {
+  const its = S.items.filter((i) => !i.date);
+  return `<section class="card"><h2>Someday <span class="count">${its.length || ''}</span></h2>
+  <div class="note" style="padding:0 16px 8px">Jot ideas here. Give them a day when you’re ready.</div>
+  ${its.map((it) => `<div class="row"><span class="ico">${esc(it.icon)}</span><div class="body"><div class="title">${esc(it.title)}</div>
+    <div class="btns" style="margin-top:6px"><button class="btn sm ghost" data-a="toDay" data-id="${it.id}" data-d="0">Today</button><button class="btn sm ghost" data-a="toDay" data-id="${it.id}" data-d="1">Tomorrow</button></div></div>
+    ${delBtn('delItem', it.id)}</div>`).join('')}
+  <form class="add" data-f="capture"><input name="text" placeholder="Add an idea…" autocomplete="off" enterkeyhint="done"><button class="btn sq" aria-label="Add">${I.plus}</button></form></section>`;
 }
 
-function habitEdit(h) {
-  return `<div class="row"><input class="emoji" value="${esc(h.icon)}" data-c="hicon" data-id="${h.id}" aria-label="Icon">
-    <div class="body"><input class="plain" value="${esc(h.name)}" data-c="hname" data-id="${h.id}" aria-label="Habit name">
-      <div class="sub">${timeIn('htime', h.id, h.time)}
-      ${h.goal ? `<select data-c="hgoal" data-id="${h.id}" aria-label="Glasses per day">${[4, 6, 8, 10, 12].map((n) => `<option ${n === h.goal ? 'selected' : ''} value="${n}">${n} glasses</option>`).join('')}</select>
-        <span>repeat</span><select data-c="hrep" data-id="${h.id}" aria-label="Repeat reminder">${[0, 1, 2, 3, 4].map((n) => `<option ${n === (h.repeatHours || 0) ? 'selected' : ''} value="${n}">${n ? `every ${n}h` : 'once'}</option>`).join('')}</select>
-        ${h.repeatHours ? `<span>until</span>${timeIn('hend', h.id, h.endTime)}` : ''}` : ''}
-      </div></div>${bellBtn('hbell', h.id, h.reminder)}${h.custom ? delBtn('hdel', h.id) : ''}</div>`;
+function vFocus() {
+  const f = F(), m = MODES[f.mode], t = today(), C = 2 * Math.PI * 108;
+  const running = f.phase !== 'idle';
+  const task = item(f.taskId);
+  const week = Array.from({ length: 7 }, (_, i) => S.focusLog[addDays(startOfWeek(t), i)] || 0).reduce((a, b) => a + b, 0);
+  const options = itemsOn(t).filter((i) => !isDone(i, t) && !i.goal);
+  let btns;
+  if (!running) btns = `<button class="btn big" data-a="fStart">Start focus</button>`;
+  else btns = `${f.paused ? '<button class="btn" data-a="fResume">Resume</button>' : '<button class="btn" data-a="fPause">Pause</button>'}
+    <button class="btn ghost" data-a="fSkip">${f.phase === 'work' ? 'Finish early' : 'Skip break'}</button><button class="btn danger" data-a="fReset">Stop</button>`;
+  return `<h1 class="ttl">Focus</h1>
+  <p class="lead">Pick one thing and start the timer. Breaks are built in.</p>
+  <div class="chips">${Object.entries(MODES).map(([k, v]) => chip(k === f.mode, 'fMode', k, `${v.n} ${v.w}/${v.b}`, running ? 'disabled' : '')).join('')}</div>
+  <section class="card center"><div class="pad">
+    <div class="fring ${f.phase === 'break' ? 'brk' : ''}"><svg viewBox="0 0 240 240" width="240" height="240"><circle cx="120" cy="120" r="108" class="trk"/>
+      <circle id="fprog" cx="120" cy="120" r="108" class="prog" stroke-dasharray="${C}" stroke-dashoffset="${C * (running ? fLeft() / fTotal() : 1)}" transform="rotate(-90 120 120)"/></svg>
+      <div class="fin"><div class="phase">${f.phase === 'work' ? (f.paused ? 'Paused' : 'Focusing') : f.phase === 'break' ? 'Break' : 'Ready'}</div>
+      <div class="clock" id="fclock">${mmss(fLeft())}</div><div class="note">${task ? `${esc(task.icon)} ${esc(task.title)}` : `${m.w} min focus · ${m.b} min break`}</div></div></div>
+    <div class="btns">${btns}</div></div></section>
+  <section class="card"><div class="pad"><label>Focus on<select data-c="fTask"><option value="">Nothing specific</option>
+    ${options.map((i) => `<option value="${i.id}" ${i.id === f.taskId ? 'selected' : ''}>${esc(i.icon)} ${esc(i.title)}${i.time ? ` · ${fmtTime(i.time)}` : ''}</option>`).join('')}</select></label></div></section>
+  <section class="card"><div class="pad stats">
+    <div><b>${S.focusLog[t] || 0}</b><span class="note">min today</span></div>
+    <div><b>${f.roundsDay === t ? f.rounds : 0}</b><span class="note">blocks today</span></div>
+    <div><b>${week}</b><span class="note">min this week</span></div></div></section>`;
 }
-const addHabitForm = () =>
-  `<form class="add" data-f="addHabit"><input class="emoji" name="icon" value="⭐" aria-label="Icon"><input name="text" placeholder="Add your own habit" autocomplete="off" style="flex:1"><input type="time" name="time" aria-label="Time"><button class="btn sq" aria-label="Add">${I.plus}</button></form>`;
-const checkinSelect = () =>
-  `<select data-c="checkin">${[0, 1, 2, 3, 4, 6].map((n) => `<option value="${n}" ${n === S.settings.checkinHours ? 'selected' : ''}>${n ? `Every ${n} hour${n > 1 ? 's' : ''}` : 'Off'}</option>`).join('')}</select>`;
 
 function vMe() {
-  const st = notifState();
+  const st = notifState(), s = S.settings;
   const stLabel = { granted: '✅ On', default: 'Not allowed yet', denied: '⛔ Blocked in settings', 'ios-install': 'Install the app first (iPhone)', unsupported: 'Not supported in this browser' }[st];
-  return `
-  <h1 class="ttl">Me</h1>
+  const habits = S.items.filter((i) => i.kind === 'habit');
+  return `<h1 class="ttl">Me</h1>
   <section class="card"><div class="pad grid2">
     <label>Name<input value="${esc(S.profile.name)}" data-c="pname" autocomplete="given-name"></label>
     <label>Age<input type="number" inputmode="numeric" min="1" max="120" value="${esc(S.profile.age)}" data-c="page"></label>
   </div></section>
 
-  <section class="card"><h2>Daily non-negotiables</h2>${S.habits.map(habitEdit).join('')}${addHabitForm()}</section>
+  <section class="card"><h2>Daily non-negotiables <button class="link" data-a="addHabit">+ Add habit</button></h2>
+    ${habits.map((h) => `<div class="row" style="--c:${col(h.color)}"><span class="ico">${esc(h.icon)}</span><div class="body" data-a="edit" data-id="${h.id}" style="cursor:pointer"><div class="title">${esc(h.title)}</div>
+    <div class="sub">${h.time ? fmtTime(h.time) : 'Anytime'}${h.dur ? ` · ${fmtDur(h.dur)}` : ''} · ${esc(repeatLabel(h))}</div></div>${bellBtn('ibell', h.id, h.time && h.rem.length)}</div>`).join('')}</section>
+
+  <section class="card"><h2>Look & feel</h2><div class="pad stack">
+    <div><div class="lbl">Theme</div><div class="seg">${['auto', 'light', 'dark'].map((k) => `<button class="${s.theme === k ? 'on' : ''}" data-a="theme" data-id="${k}">${k[0].toUpperCase() + k.slice(1)}</button>`).join('')}</div></div>
+    <div><div class="lbl">Accent colour</div><div class="swatches">${Object.entries(ACCENTS).map(([k, v]) => `<button class="sw ${s.accent === k ? 'on' : ''}" style="--c:${v[0]}" data-a="accent" data-id="${k}" aria-label="${k}"></button>`).join('')}</div></div>
+    <div><div class="lbl">Reminder sound</div><div class="chips wrap">${['chime', 'bell', 'soft', 'drop', 'off'].map((k) => chip(s.sound === k, 'sound', k, k[0].toUpperCase() + k.slice(1))).join('')}</div></div>
+  </div></section>
 
   <section class="card"><h2>Reminders</h2><div class="pad stack">
     <div><b>Notifications:</b> ${stLabel} ${st === 'default' ? '<button class="link" data-a="notif">Allow</button>' : ''}</div>
-    <label>Remaining-items check-in${checkinSelect()}</label>
-    <div class="grid2"><label>Day starts<input type="time" value="${S.settings.dayStart}" data-c="dayStart"></label>
-      <label>Day ends<input type="time" value="${S.settings.dayEnd}" data-c="dayEnd"></label></div>
-    <div class="note">The app can only remind you while it’s open or running in the background. Phones may pause it after a while. For alarms that always ring, add your reminders to your phone’s calendar:</div>
-    <div class="btns"><button class="btn ghost" data-a="ics">📅 Add reminders to phone calendar</button>
-      <button class="btn ghost" data-a="test">Send a test reminder</button></div>
+    <label>“What’s left” check-in<select data-c="checkin">${[0, 1, 2, 3, 4, 6].map((n) => `<option value="${n}" ${n === s.checkinHours ? 'selected' : ''}>${n ? `Every ${n} hour${n > 1 ? 's' : ''}` : 'Off'}</option>`).join('')}</select></label>
+    <div class="grid2"><label>Day starts<input type="time" value="${s.dayStart}" data-c="dayStart"></label><label>Day ends<input type="time" value="${s.dayEnd}" data-c="dayEnd"></label></div>
+    <label class="inline"><input type="checkbox" data-c="autoCarry" ${s.autoCarry ? 'checked' : ''}> Move unfinished tasks to today automatically (skip daily review)</label>
+    <div class="note">The app reminds you while it’s open or running in the background. Phones may pause it after a while. For alarms that always ring, add your reminders to your phone’s calendar:</div>
+    <div class="btns"><button class="btn ghost" data-a="ics">📅 Add to phone calendar</button><button class="btn ghost" data-a="test">Test reminder</button></div>
   </div></section>
-
   ${standalone ? '' : installBanner(true)}
-
   <section class="card"><h2>Your data</h2><div class="pad stack">
-    <div class="note">Everything is stored only on this device. Nothing is uploaded. Make a backup now and then, or to move to a new phone.</div>
-    <div class="btns"><button class="btn ghost" data-a="backup">Download backup</button>
-      <button class="btn ghost" data-a="restorePick">Restore backup</button>
-      <button class="btn danger" data-a="reset">Erase everything</button></div>
+    <div class="note">Everything is stored only on this device. No account, nothing uploaded. Back up now and then, or to move to a new phone.</div>
+    <div class="btns"><button class="btn ghost" data-a="backup">Download backup</button><button class="btn ghost" data-a="restorePick">Restore backup</button><button class="btn danger" data-a="reset">Erase everything</button></div>
   </div></section>
-  <p class="note center">DayBoost · works offline</p>`;
+  <p class="note center">Tidy Day · works offline</p>`;
+}
+
+/* ---------- add / edit sheet ---------- */
+let D = null, showIcons = false, moreOpen = false;
+function openSheet(it, preset = {}) {
+  D = it ? JSON.parse(JSON.stringify(it)) : {
+    id: null, kind: 'task', title: '', icon: '📝', color: 'sage', date: selDay, time: '', dur: 30,
+    repeat: { t: 'none', days: [] }, rem: [0], done: {}, note: '', ...preset,
+  };
+  D._new = !it; showIcons = false; moreOpen = false;
+  renderSheet();
+  $('#sheet').hidden = false;
+  document.body.style.overflow = 'hidden';
+  if (D._new) setTimeout(() => $('#sheet input[data-s=title]')?.focus(), 60);
+}
+function closeSheet() { $('#sheet').hidden = true; D = null; document.body.style.overflow = ''; }
+function renderSheet() {
+  const r = D.repeat, isHabit = D.kind === 'habit', t = today(), tm = addDays(t, 1);
+  const when = !D.date ? 'someday' : D.date === t ? 'today' : D.date === tm ? 'tomorrow' : 'date';
+  const remOn = D.time && D.rem.length;
+  $('#sheetPanel').innerHTML = `<form data-f="saveItem" class="stack">
+    <div class="sheet-head"><button type="button" class="link" data-a="closeSheet">Cancel</button><b>${D._new ? 'Add' : 'Edit'}</b><button class="link">Save</button></div>
+    <div class="titlebox" style="--c:${col(D.color)}"><button type="button" class="icobtn" data-a="toggleIcons" aria-label="Change icon">${esc(D.icon)}</button>
+      <input data-s="title" value="${esc(D.title)}" placeholder="What do you want to do?" required autocomplete="off" aria-label="Title" enterkeyhint="done"></div>
+    ${showIcons ? `<div class="icongrid">${ICONS.map((i) => `<button type="button" class="${i === D.icon ? 'on' : ''}" data-a="setIcon" data-id="${i}">${i}</button>`).join('')}</div>` : ''}
+    <div><div class="lbl">${isHabit || r.t !== 'none' ? 'Starting' : 'When'}</div><div class="chips wrap">
+      ${chip(when === 'today', 'setWhen', 'today', 'Today')}${chip(when === 'tomorrow', 'setWhen', 'tomorrow', 'Tomorrow')}${chip(when === 'date', 'setWhen', 'date', when === 'date' ? esc(fmtDay(D.date)) : 'Pick a day')}
+      ${isHabit || r.t !== 'none' ? '' : chip(when === 'someday', 'setWhen', 'someday', 'Someday')}</div>
+      ${when === 'date' ? `<input type="date" data-s="date" value="${D.date}" style="margin-top:8px" aria-label="Date">` : ''}</div>
+    ${D.date ? `<div class="grid2" style="align-items:end"><label>Time<input type="time" data-s="time" value="${D.time || ''}"></label>
+      <button type="button" class="btn ${remOn ? '' : 'ghost'}" data-a="quickRem" ${D.time ? '' : 'disabled style="opacity:.5"'}>${remOn ? '🔔 Reminder on' : '🔕 No reminder'}</button></div>` : ''}
+    <button type="button" class="link" data-a="toggleMore" style="justify-self:start;font-size:15px">${moreOpen ? '− Fewer options' : '+ More options'} <span class="note">(repeat, length, colour…)</span></button>
+    ${moreOpen ? `
+    ${D.core ? '' : `<div><div class="lbl">Type</div><div class="seg">${Object.entries(KINDS).map(([k, v]) => `<button type="button" class="${D.kind === k ? 'on' : ''}" data-a="setKind" data-id="${k}">${v}</button>`).join('')}</div></div>`}
+    <div><div class="lbl">Repeat</div><div class="chips wrap">${Object.entries(REPEATS).map(([k, v]) => chip(r.t === k, 'setRepeat', k, v)).join('')}</div>
+      ${r.t === 'weekly' ? `<div class="chips wrap" style="margin-top:8px">${[1, 2, 3, 4, 5, 6, 0].map((w) => chip((r.days.length ? r.days : [dow(D.date || today())]).includes(w), 'setWday', w, WD[w])).join('')}</div>` : ''}</div>
+    <div><div class="lbl">How long</div><div class="chips wrap">${DURS.map((m) => chip(D.dur === m, 'setDur', m, m ? fmtDur(m) : 'None')).join('')}</div></div>
+    <div><div class="lbl">Remind me ${D.time ? '' : '<span class="note">(set a time first)</span>'}</div>
+      <div class="chips wrap">${REMS.map(([m, l]) => chip(D.rem.includes(m), 'toggleRem', m, l)).join('')}</div></div>
+    <div><div class="lbl">Colour</div><div class="swatches">${Object.entries(COLORS).map(([k, v]) => `<button type="button" class="sw ${D.color === k ? 'on' : ''}" style="--c:${v}" data-a="setColor" data-id="${k}" aria-label="${k}"></button>`).join('')}</div></div>
+    ${D.goal ? `<div class="grid2"><label>Daily goal<select data-s="goal">${[4, 6, 8, 10, 12].map((n) => `<option ${n === D.goal ? 'selected' : ''} value="${n}">${n} glasses</option>`).join('')}</select></label>
+      <label>Remind again<select data-s="every">${[0, 1, 2, 3, 4].map((n) => `<option ${n === (D.every || 0) ? 'selected' : ''} value="${n}">${n ? `every ${n}h` : 'no'}</option>`).join('')}</select></label></div>
+      ${D.every ? `<label>Until<input type="time" data-s="until" value="${D.until || '21:00'}"></label>` : ''}` : ''}
+    <label>Note<textarea data-s="note" rows="2" placeholder="Optional">${esc(D.note)}</textarea></label>
+    ${D._new ? '' : `<div class="btns"><button type="button" class="btn ghost" data-a="focusItem" data-id="${D.id}">⏱ Focus on this</button>
+      ${D.core ? '' : `<button type="button" class="btn danger" data-a="delItem" data-id="${D.id}">Delete</button>`}</div>`}` : ''}
+    <button class="btn big">Save</button></form>`;
+}
+function saveDraft() {
+  if (!D.title.trim()) { toast('Give it a name first'); return; }
+  const it = { ...D, title: D.title.trim() };
+  delete it._new;
+  if (!it.date) it.time = '';
+  if (it.repeat.t === 'weekly' && !it.repeat.days.length) it.repeat.days = [dow(it.date || today())];
+  if (D._new) { it.id = uid(); S.items.push(it); } else S.items[S.items.findIndex((x) => x.id === it.id)] = it;
+  save(); closeSheet(); render();
+  toast(D?._new === false ? 'Saved' : 'Saved', it.date ? `${fmtDay(it.date)}${it.time ? ` at ${fmtTime(it.time)}` : ''}` : 'In your Inbox');
+  if (it.time && it.rem.length) askNotif();
 }
 
 /* ---------- onboarding ---------- */
-const ob = { step: 0, name: '', age: '', pick: new Set(['🧹 House cleaning']) };
+const ob = { step: 0, name: '', age: '', pick: new Set(['House cleaning']) };
 function vOnboard() {
   if (ob.step === 0) return `<div class="ob">
     <div class="logo"><img src="icons/icon-192.png" alt=""></div>
-    <h1>DayBoost</h1>
-    <p class="lead">Your daily non-negotiables, to-dos and appointments, with gentle reminders. Everything stays on this phone.</p>
+    <h1>Tidy Day</h1>
+    <p class="lead">Your habits, to-dos and appointments on one calm timeline, with gentle reminders and a focus timer. Everything stays on this phone.</p>
     ${installBanner(true)}
     <form class="card pad stack" data-f="ob0">
       <label>Your name<input name="name" required autocomplete="given-name" value="${esc(ob.name)}"></label>
@@ -593,16 +859,17 @@ function vOnboard() {
     <p class="note center">Moving from another phone? <button class="link" data-a="restorePick">Restore a backup</button></p></div>`;
   if (ob.step === 1) return `<div class="ob">
     <div class="steps">Step 2 of 3</div><h1>Your non-negotiables</h1>
-    <p class="lead">The daily basics everyone should hit. Set a time that suits you and tap the bell 🔔 to get a reminder. You can add your own too.</p>
-    <section class="card">${S.habits.map(habitEdit).join('')}${addHabitForm()}</section>
+    <p class="lead">The daily basics everyone should hit. Set a time that suits you and tap the bell 🔔 for a reminder. You can fine-tune each one later.</p>
+    <section class="card">${S.items.filter((i) => i.kind === 'habit').map((h) => `<div class="row"><span class="ico">${esc(h.icon)}</span><div class="body"><div class="title">${esc(h.title)}</div>
+      <div class="sub"><input type="time" value="${h.time || ''}" data-c="itime" data-id="${h.id}" aria-label="Time">${h.every ? `<span>then every ${h.every}h</span>` : ''}</div></div>${bellBtn('ibell', h.id, h.time && h.rem.length)}</div>`).join('')}</section>
     <div class="obnav"><button class="btn ghost" data-a="obStep" data-id="0">Back</button><button class="btn" data-a="obStep" data-id="2">Continue</button></div></div>`;
   return `<div class="ob">
     <div class="steps">Step 3 of 3</div><h1>Low priority, still needs doing</h1>
-    <p class="lead">Pick the chores you want to track. You can add more any time.</p>
-    <div class="chips wrapchips">${LOW_SUGGESTIONS.map(([t], i) => `<button class="chip ${ob.pick.has(t) ? 'on' : ''}" data-a="obPick" data-id="${i}">${esc(t)}</button>`).join('')}</div>
+    <p class="lead">Pick the chores you want to keep track of. You can add more any time.</p>
+    <div class="chips wrap">${CHORE_SUGGESTIONS.map(([ic, t], i) => chip(ob.pick.has(t), 'obPick', i, `${ic} ${t}`)).join('')}</div>
     <section class="card"><div class="pad stack">
-      <label>Remind me what’s left${checkinSelect()}</label>
-      <div class="note">DayBoost sends a list of what’s still undone at regular times through your day.</div>
+      <label>Remind me what’s left<select data-c="checkin">${[0, 2, 3, 4, 6].map((n) => `<option value="${n}" ${n === S.settings.checkinHours ? 'selected' : ''}>${n ? `Every ${n} hours` : 'Off'}</option>`).join('')}</select></label>
+      <div><div class="lbl">Theme</div><div class="seg">${['auto', 'light', 'dark'].map((k) => `<button class="${S.settings.theme === k ? 'on' : ''}" data-a="theme" data-id="${k}">${k[0].toUpperCase() + k.slice(1)}</button>`).join('')}</div></div>
       ${notifState() === 'granted' ? '<div>🔔 Notifications are on</div>' : `<button class="btn ghost" data-a="notif">🔔 Allow notifications</button>`}
     </div></section>
     <div class="obnav"><button class="btn ghost" data-a="obStep" data-id="1">Back</button><button class="btn" data-a="obDone">Start my day</button></div></div>`;
@@ -610,13 +877,15 @@ function vOnboard() {
 
 /* ---------- render ---------- */
 function render() {
+  applyTheme();
   if (!S.profile) {
     $('#app').hidden = true; $('#ob').hidden = false;
     $('#ob').innerHTML = vOnboard();
     return;
   }
   $('#ob').hidden = true; $('#app').hidden = false;
-  $('#view').innerHTML = { today: vToday, plan: vPlan, sched: vSched, me: vMe }[tab]();
+  $('#view').innerHTML = { today: vToday, week: vWeek, focus: vFocus, me: vMe }[tab]();
+  $('#fab').hidden = tab === 'focus' || tab === 'me';
   document.querySelectorAll('nav [data-a=tab]').forEach((b) => b.classList.toggle('on', b.dataset.id === tab));
 }
 document.querySelectorAll('[data-icon]').forEach((el) => { el.innerHTML = I[el.dataset.icon]; });
@@ -629,158 +898,213 @@ function download(name, text, type) {
   setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1500);
 }
 function exportICS() {
-  const icsText = (s) => String(s).replace(/[\\;,]/g, (m) => '\\' + m).replace(/\n/g, '\\n');
+  const tx = (s) => String(s).replace(/[\\;,]/g, (m) => '\\' + m).replace(/\n/g, '\\n');
   const dt = (date, time) => date.replace(/-/g, '') + 'T' + time.replace(':', '') + '00';
   const stamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-  const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//DayBoost//EN', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:DayBoost'];
-  let n = 0;
-  const ev = (id, title, start, rrule, before) => {
-    n++;
-    L.push('BEGIN:VEVENT', `UID:${id}@dayboost`, `DTSTAMP:${stamp}`, `DTSTART:${start}`, 'DURATION:PT15M', `SUMMARY:${icsText(title)}`);
-    if (rrule) L.push(`RRULE:${rrule}`);
-    L.push('BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsText(title)}`, `TRIGGER:-PT${before || 0}M`, 'END:VALARM', 'END:VEVENT');
-  };
+  const BY = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+  const rrule = (it) => ({
+    none: null, daily: 'FREQ=DAILY', weekdays: 'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR', monthly: 'FREQ=MONTHLY',
+    weekly: 'FREQ=WEEKLY;BYDAY=' + (it.repeat.days.length ? it.repeat.days : [dow(it.date)]).map((x) => BY[x]).join(','),
+  })[it.repeat.t];
+  const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//TidyDay//EN', 'CALSCALE:GREGORIAN', 'X-WR-CALNAME:Tidy Day'];
   const t = today();
-  S.habits.forEach((h) => {
-    if (!h.reminder || !h.time) return;
-    ev(`h-${h.id}`, `${h.icon} ${h.name}`, dt(t, h.time), 'FREQ=DAILY');
-    if (h.repeatHours) for (let m = toMin(h.time) + h.repeatHours * 60, i = 1; m <= toMin(h.endTime || '21:00'); m += h.repeatHours * 60, i++)
-      ev(`h-${h.id}-${i}`, `${h.icon} ${h.name}`, dt(t, fromMin(m)), 'FREQ=DAILY');
+  let n = 0;
+  S.items.forEach((it) => {
+    if (!it.date || !it.time || !it.rem.length) return;
+    if (it.repeat.t === 'none' && it.date < t) return;
+    const start = it.repeat.t === 'none' || it.date > t ? it.date : t;
+    const starts = [it.time];
+    if (it.every) for (let m = toMin(it.time) + it.every * 60; m <= toMin(it.until || '21:00'); m += it.every * 60) starts.push(fromMin(m));
+    starts.forEach((tm, i) => {
+      n++;
+      L.push('BEGIN:VEVENT', `UID:${it.id}-${i}@tidyday`, `DTSTAMP:${stamp}`, `DTSTART:${dt(start, tm)}`, `DURATION:PT${it.dur || 15}M`, `SUMMARY:${tx(`${it.icon} ${it.title}`)}`);
+      const rr = rrule(it); if (rr) L.push(`RRULE:${rr}`);
+      (i ? [0] : it.rem).forEach((b) => L.push('BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${tx(it.title)}`, `TRIGGER:-PT${b}M`, 'END:VALARM'));
+      L.push('END:VEVENT');
+    });
   });
-  S.appts.forEach((a) => {
-    if (a.repeat !== 'weekly' && a.date < t) return;
-    ev(`a-${a.id}`, a.title, dt(a.date, a.time), a.repeat === 'weekly' ? 'FREQ=WEEKLY' : null, a.reminder ? a.before : 0);
-  });
-  if (!n) return toast('Nothing to export', 'Turn on a reminder or add an appointment first.');
+  if (!n) return toast('Nothing to export', 'Give an item a time and turn on its reminder first.');
   L.push('END:VCALENDAR');
-  download('dayboost-reminders.ics', L.join('\r\n'), 'text/calendar');
+  download('tidyday-reminders.ics', L.join('\r\n'), 'text/calendar');
   toast('Calendar file ready', 'Open it and choose “Add all” to put your reminders in your phone’s calendar.');
 }
 
 /* ---------- actions ---------- */
-const needTime = (btn) => {
-  toast('Pick a time first', 'Then tap the bell to turn the reminder on.');
-  const inp = btn.closest('.row')?.querySelector('input[type=time]');
-  if (inp) { inp.focus(); try { inp.showPicker(); } catch (e) {} }
-};
 const A = {
-  tab(id) { tab = id; render(); scrollTo(0, 0); },
-  habit(id) { const L = dayLog(today()); L[id] = !isDone(hab(id), today()); save(); render(); },
-  water(id) { const h = hab(id), L = dayLog(today()), n = getCount(h, today()); L[id] = n >= h.goal ? h.goal - 1 : n + 1; save(); render(); if (L[id] === h.goal) toast('💧 Water goal reached!'); },
-  waterMinus(id) { const L = dayLog(today()); L[id] = Math.max(0, getCount(hab(id), today()) - 1); save(); render(); },
-  hbell(id, d, b) { const h = hab(id); if (!h.time && !h.reminder) return needTime(b); h.reminder = !h.reminder; save(); render(); if (h.reminder) askNotif(); },
-  hdel(id) { if (confirm('Remove this habit?')) { S.habits = S.habits.filter((h) => h.id !== id); save(); render(); } },
-  todo(id, d) { const x = findTodo(d, id); x.done = !x.done; save(); render(); },
-  tbell(id, d, b) { const x = findTodo(d, id); if (!x.time && !x.reminder) return needTime(b); x.reminder = !x.reminder; save(); render(); if (x.reminder) askNotif(); },
-  tdel(id, d) { S.todos[d] = S.todos[d].filter((x) => x.id !== id); save(); render(); },
-  moveAll() {
-    const t = today(), tm = addDays(t, 1);
-    todosOn(t).filter((x) => !x.done).forEach((x) => {
-      (S.todos[tm] = S.todos[tm] || []).push({ ...x, id: uid(), carried: (x.carried || 0) + 1, from: x.from || t });
-      x.movedTo = tm;
-    });
-    save(); planDay = tm; render(); toast('Moved to tomorrow');
+  tab(id) { tab = id; if (id === 'today') selDay = selDay || today(); render(); scrollTo(0, 0); },
+  pickDay(id) { selDay = id; render(); },
+  shiftDay(n) { selDay = addDays(selDay, +n); render(); },
+  shiftWeek(n) { weekStart = +n ? addDays(weekStart || startOfWeek(today()), +n) : null; render(); },
+  openDay(id) { selDay = id; tab = 'today'; render(); scrollTo(0, 0); },
+  add() { openSheet(null); },
+  addAt(time, d) { openSheet(null, { date: d, time }); },
+  addHabit() { openSheet(null, { kind: 'habit', icon: '⭐', date: today(), time: '08:00', dur: 15, repeat: { t: 'daily', days: [] } }); moreOpen = true; renderSheet(); },
+  edit(id) { const it = item(id); if (it) openSheet(it); },
+  done(id, d) {
+    const it = item(id);
+    if (it.goal) { const n = count(it, d); it.done[d] = n >= it.goal ? it.goal - 1 : n + 1; if (it.done[d] === it.goal) toast('💧 Water goal reached!'); }
+    else it.done[d] = !it.done[d];
+    if (isDone(it, d)) play('drop', .12);
+    save(); render();
   },
-  planDay(id) { planDay = id; render(); },
-  appt(id, d) { const a = S.appts.find((a) => a.id === id); a.doneDates = a.doneDates || {}; a.doneDates[d] = !a.doneDates[d]; save(); render(); },
-  abell(id) { const a = S.appts.find((a) => a.id === id); a.reminder = !a.reminder; save(); render(); if (a.reminder) askNotif(); },
-  adel(id) { const a = S.appts.find((a) => a.id === id); if (confirm(`Delete “${a.title}”${a.repeat === 'weekly' ? ' (all weeks)' : ''}?`)) { S.appts = S.appts.filter((x) => x.id !== id); save(); render(); } },
-  low(id) { const x = S.low.find((x) => x.id === id); x.done = lowDone(x, today()) ? null : today(); save(); render(); },
-  lbell(id, d, b) { const x = S.low.find((x) => x.id === id); if (!x.time && !x.reminder) return needTime(b); x.reminder = !x.reminder; save(); render(); if (x.reminder) askNotif(); },
-  ldel(id) { S.low = S.low.filter((x) => x.id !== id); save(); render(); },
+  ibell(id, d, b) {
+    const it = item(id);
+    if (!it.time) return openSheet(it);
+    it.rem = it.rem.length ? [] : [it.kind === 'appt' ? 60 : 0];
+    save(); render(); if (it.rem.length) askNotif();
+  },
+  delItem(id) {
+    const it = item(id);
+    if (!confirm(`Delete “${it.title}”${it.repeat.t !== 'none' ? ' and all its repeats' : ''}?`)) return;
+    S.items = S.items.filter((x) => x.id !== id); save(); closeSheet(); render();
+  },
+  toDay(id, n) { const it = item(id); it.date = addDays(today(), +n); save(); render(); toast(`Moved to ${fmtDay(it.date)}`, 'Tap it on the timeline to give it a time.'); },
+  rv(id, where) {
+    const it = item(id), t = today();
+    if (where === 'drop') S.items = S.items.filter((x) => x.id !== id);
+    else if (where === 'inbox') { it.date = null; it.time = ''; }
+    else carry(it, where === 'today' ? t : addDays(t, 1));
+    save(); render();
+  },
+  rvAll() { leftovers().forEach((it) => carry(it, today())); save(); render(); toast('Moved to today'); },
+  chore(id) { const x = S.chores.find((x) => x.id === id); x.done = choreDone(x, today()) ? null : today(); if (x.done) play('drop', .12); save(); render(); },
+  cbell(id, d, b) {
+    const x = S.chores.find((x) => x.id === id);
+    if (!x.time && !x.rem) { toast('Pick a time first'); const i = b.closest('.row').querySelector('input[type=time]'); i.focus(); try { i.showPicker(); } catch (e) {} return; }
+    x.rem = !x.rem; save(); render(); if (x.rem) askNotif();
+  },
+  cdel(id) { S.chores = S.chores.filter((x) => x.id !== id); save(); render(); },
+  // sheet
+  closeSheet,
+  toggleIcons() { showIcons = !showIcons; renderSheet(); },
+  toggleMore() { moreOpen = !moreOpen; renderSheet(); },
+  setWhen(w) {
+    const t = today();
+    if (w === 'someday') { D.date = null; D.time = ''; }
+    else if (w === 'today') D.date = t;
+    else if (w === 'tomorrow') D.date = addDays(t, 1);
+    else if (!D.date || D.date <= addDays(t, 1)) D.date = addDays(t, 2);
+    renderSheet();
+  },
+  quickRem() { if (!D.time) return; D.rem = D.rem.length ? [] : [D.kind === 'appt' ? 60 : 0]; renderSheet(); },
+  setIcon(v) { D.icon = v; showIcons = false; renderSheet(); },
+  setKind(k) {
+    D.kind = k;
+    if (k === 'habit' && D.repeat.t === 'none') D.repeat = { t: 'daily', days: [] };
+    if (k === 'habit' && !D.date) D.date = today();
+    if (k === 'appt') { D.rem = [60]; if (D.icon === '📝') D.icon = '📅'; if (D.color === 'sage') D.color = 'peach'; if (!D.date) D.date = selDay; }
+    renderSheet();
+  },
+  setColor(c) { D.color = c; renderSheet(); },
+  setDur(m) { D.dur = +m; renderSheet(); },
+  setRepeat(t) { D.repeat = { t, days: t === 'weekly' ? [dow(D.date || today())] : [] }; if (t !== 'none' && !D.date) D.date = today(); renderSheet(); },
+  setWday(w) { w = +w; const days = D.repeat.days.length ? D.repeat.days : [dow(D.date || today())]; D.repeat.days = days.includes(w) ? days.filter((x) => x !== w) : [...days, w]; renderSheet(); },
+  toggleRem(m) { m = +m; D.rem = D.rem.includes(m) ? D.rem.filter((x) => x !== m) : [...D.rem, m].sort((a, b) => a - b); renderSheet(); },
+  focusItem(id) { closeSheet(); S.focus.taskId = id; tab = 'focus'; save(); render(); scrollTo(0, 0); },
+  // focus
+  fMode(k) { S.focus.mode = k; save(); render(); },
+  fStart() { Object.assign(S.focus, { phase: 'work', endAt: Date.now() + MODES[S.focus.mode].w * 60000, paused: false }); save(); render(); if (notifState() === 'default') askNotif(); },
+  fPause() { S.focus.left = fLeft(); S.focus.paused = true; save(); render(); },
+  fResume() { S.focus.endAt = Date.now() + S.focus.left * 1000; S.focus.paused = false; save(); render(); },
+  fSkip() { finishPhase(false); },
+  fReset() { S.focus.phase = 'idle'; S.focus.paused = false; save(); render(); },
+  // settings
+  theme(k) { S.settings.theme = k; save(); render(); },
+  accent(k) { S.settings.accent = k; save(); render(); },
+  sound(k) { S.settings.sound = k; save(); render(); play(k); },
   notif() { askNotif(); },
   test() { notify('🔔 Test reminder', 'If you can see this, reminders work.', 'test'); },
   ics: exportICS,
   install() { if (!deferredPrompt) return; deferredPrompt.prompt(); deferredPrompt.userChoice.finally(() => { deferredPrompt = null; render(); }); },
-  hideInstall() { S.hideInstall = true; save(); render(); },
-  backup() { download(`dayboost-backup-${today()}.json`, JSON.stringify(S, null, 1), 'application/json'); },
+  hideInstall() { S.settings.hideInstall = true; save(); render(); },
+  backup() { download(`tidyday-backup-${today()}.json`, JSON.stringify(S, null, 1), 'application/json'); },
   restorePick() { $('#restoreFile').click(); },
-  reset() { if (confirm('Erase all DayBoost data on this phone? This can’t be undone.')) { localStorage.removeItem(KEY); location.reload(); } },
+  reset() { if (confirm('Erase all Tidy Day data on this phone? This can’t be undone.')) { localStorage.removeItem(KEY); localStorage.removeItem(OLD_KEY); location.reload(); } },
+  // onboarding
   obStep(id) { ob.step = Number(id); render(); scrollTo(0, 0); },
-  obPick(i) { const t = LOW_SUGGESTIONS[i][0]; ob.pick.has(t) ? ob.pick.delete(t) : ob.pick.add(t); render(); },
+  obPick(i) { const t = CHORE_SUGGESTIONS[i][1]; ob.pick.has(t) ? ob.pick.delete(t) : ob.pick.add(t); render(); },
   obDone() {
     S.profile = { name: ob.name, age: ob.age };
-    LOW_SUGGESTIONS.forEach(([t, rep]) => { if (ob.pick.has(t)) S.low.push({ id: uid(), title: t, repeat: rep, time: '', reminder: false, done: null }); });
+    CHORE_SUGGESTIONS.forEach(([icon, title, every]) => { if (ob.pick.has(title)) S.chores.push({ id: uid(), icon, title, every, time: '', rem: false, done: null }); });
     S.lastDay = today();
-    save(); tab = 'today'; render(); scrollTo(0, 0);
+    save(); tab = 'today'; selDay = today(); render(); scrollTo(0, 0);
     navigator.storage?.persist?.();
   },
 };
 const C = {
-  htime(id, v) { const h = hab(id); h.time = v; if (!v) h.reminder = false; save(); render(); },
-  hend(id, v) { hab(id).endTime = v || '21:00'; save(); },
-  hrep(id, v) { hab(id).repeatHours = Number(v); save(); render(); },
-  hgoal(id, v) { hab(id).goal = Number(v); save(); },
-  hicon(id, v) { hab(id).icon = v.trim() || '⭐'; save(); },
-  hname(id, v) { if (v.trim()) { hab(id).name = v.trim(); save(); } },
-  ttime(id, v, el) { const x = findTodo(el.dataset.d, id); x.time = v; x.reminder = !!v; save(); render(); },
-  ltime(id, v) { const x = S.low.find((x) => x.id === id); x.time = v; x.reminder = !!v; save(); render(); },
-  planDate(id, v) { if (v) { planDay = v; render(); } },
+  itime(id, v) { const it = item(id); it.time = v; if (!v) it.rem = []; save(); render(); },
+  ctime(id, v) { const x = S.chores.find((x) => x.id === id); x.time = v; x.rem = !!v; save(); render(); },
+  fTask(id, v) { S.focus.taskId = v; save(); render(); },
   pname(id, v) { if (v.trim()) { S.profile.name = v.trim(); save(); } },
   page(id, v) { S.profile.age = v; save(); },
   checkin(id, v) { S.settings.checkinHours = Number(v); save(); },
   dayStart(id, v) { if (v) { S.settings.dayStart = v; save(); } },
   dayEnd(id, v) { if (v) { S.settings.dayEnd = v; save(); } },
+  autoCarry(id, v, el) { S.settings.autoCarry = el.checked; save(); },
   restore(id, v, el) {
     const f = el.files[0]; if (!f) return;
     f.text().then((txt) => {
-      const obj = JSON.parse(txt);
-      if (!obj || !Array.isArray(obj.habits)) throw new Error('bad file');
-      S = Object.assign(defaults(), obj); save(); tab = 'today'; render(); toast('Backup restored ✅');
-    }).catch(() => toast('That file isn’t a DayBoost backup')).finally(() => { el.value = ''; });
+      const o = JSON.parse(txt);
+      if (o && Array.isArray(o.items)) S = fill(o);
+      else if (o && Array.isArray(o.habits)) S = migrate(o);
+      else throw new Error('bad file');
+      save(); tab = 'today'; selDay = today(); render(); toast('Backup restored ✅');
+    }).catch(() => toast('That file isn’t a Tidy Day backup')).finally(() => { el.value = ''; });
   },
 };
-const F = {
-  addTodo(f) {
+const FORMS = {
+  saveItem: saveDraft,
+  capture(f) {
     const text = f.elements.text.value.trim(); if (!text) return;
-    const d = f.dataset.d, time = f.elements.time.value;
-    (S.todos[d] = S.todos[d] || []).push({ id: uid(), title: text, time, reminder: !!time, done: false });
-    save(); render();
-    $(`form[data-f=addTodo][data-d="${d}"] input[name=text]`)?.focus();
-    if (time) askNotif();
+    S.items.push({ id: uid(), kind: 'task', title: text, icon: '📝', color: 'sage', date: null, time: '', dur: 30, repeat: { t: 'none', days: [] }, rem: [0], done: {}, note: '' });
+    save(); render(); $('form[data-f=capture] input')?.focus();
   },
-  addLow(f) {
+  addChore(f) {
     const text = f.elements.text.value.trim(); if (!text) return;
-    S.low.push({ id: uid(), title: text, repeat: Number(f.elements.repeat.value), time: '', reminder: false, done: null });
-    save(); render();
-  },
-  addAppt(f) {
-    const e = f.elements, before = Number(e.before.value);
-    S.appts.push({ id: uid(), title: e.text.value.trim(), date: e.date.value, time: e.time.value, before: Math.max(0, before), reminder: before >= 0, repeat: e.repeat.value, doneDates: {} });
-    save(); render(); toast('Added to schedule', `${e.text.value.trim()}, ${fmtDay(e.date.value)} at ${fmtTime(e.time.value)}`);
-    if (before >= 0) askNotif();
-  },
-  addHabit(f) {
-    const text = f.elements.text.value.trim(); if (!text) return;
-    const time = f.elements.time.value;
-    S.habits.push({ id: uid(), icon: f.elements.icon.value.trim() || '⭐', name: text, time, reminder: !!time, custom: true });
+    S.chores.push({ id: uid(), icon: '', title: text, every: Number(f.elements.every.value), time: '', rem: false, done: null });
     save(); render();
   },
   ob0(f) { ob.name = f.elements.name.value.trim(); ob.age = f.elements.age.value; if (ob.name) A.obStep(1); },
 };
 document.addEventListener('click', (e) => {
-  const b = e.target.closest('button[data-a]');
-  if (b && A[b.dataset.a]) { e.preventDefault(); A[b.dataset.a](b.dataset.id, b.dataset.d, b); }
+  const b = e.target.closest('[data-a]');
+  if (!b || !A[b.dataset.a]) return;
+  e.preventDefault();
+  A[b.dataset.a](b.dataset.id, b.dataset.d, b);
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && D) closeSheet();
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.bc[data-a]')) { e.preventDefault(); A.edit(e.target.dataset.id); }
+});
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (D && t.dataset.s && t.type !== 'checkbox') D[t.dataset.s] = ['goal', 'every'].includes(t.dataset.s) ? Number(t.value) : t.value;
 });
 document.addEventListener('change', (e) => {
   const t = e.target;
+  if (D && t.dataset.s) {
+    if (t.dataset.s === 'inbox') { D.date = t.checked ? null : selDay; if (!D.date) D.time = ''; renderSheet(); }
+    else if (t.dataset.s === 'time' || t.dataset.s === 'every') renderSheet();
+    return;
+  }
   if (t.dataset.c && C[t.dataset.c]) C[t.dataset.c](t.dataset.id, t.value, t);
 });
 document.addEventListener('submit', (e) => {
   const f = e.target;
-  if (f.dataset.f && F[f.dataset.f]) { e.preventDefault(); F[f.dataset.f](f); }
+  if (f.dataset.f && FORMS[f.dataset.f]) { e.preventDefault(); FORMS[f.dataset.f](f); }
 });
 $('#toast').addEventListener('click', () => $('#toast').classList.remove('show'));
 
 /* ---------- boot ---------- */
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; render(); });
-window.addEventListener('appinstalled', () => { deferredPrompt = null; toast('DayBoost installed 🎉', 'Open it from your home screen.'); render(); });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { tick(); render(); } });
+window.addEventListener('appinstalled', () => { deferredPrompt = null; toast('Tidy Day installed 🎉', 'Open it from your home screen.'); render(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { tick(); focusTick(); if ($('#sheet').hidden) render(); } });
 if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});
 rollover();
 render();
 tick();
 setInterval(tick, 30000);
+setInterval(focusTick, 1000);
 </script>
 </body>
 </html>
