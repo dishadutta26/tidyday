@@ -1,6 +1,6 @@
 // Tidy Day service worker: offline app shell + notification clicks.
 // Bump CACHE when you change any file so phones pick up the new version.
-const CACHE = 'tidyday-v3';
+const CACHE = 'tidyday-v4';
 const ASSETS = [
   './',
   './index.html',

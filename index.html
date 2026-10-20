@@ -124,6 +124,7 @@ label.inline{display:flex;align-items:center;gap:8px;font-weight:500;color:var(-
 label.inline input{width:20px;height:20px;accent-color:var(--accent)}
 .lbl{font-size:13px;font-weight:600;color:var(--mute);margin-bottom:6px}
 .stack{display:grid;gap:14px}
+.stack > *{min-width:0}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 form.add{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);align-items:center}
 form.add input[name=text]{flex:1}
@@ -181,6 +182,51 @@ form.add input[name=text]{flex:1}
 .center{text-align:center}
 .center .btns{justify-content:center}
 
+/* habits */
+.hab{border-left:5px solid var(--c)}
+.habtop{display:flex;gap:12px;align-items:center}
+.title.big{font-size:18px;line-height:1.3;margin:2px 0}
+.dots{display:flex;gap:7px;margin-top:10px}
+.dots span{display:grid;justify-items:center;gap:3px;font-size:10px;color:var(--mute);font-weight:600}
+.dots i{width:16px;height:16px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--c)}
+.dots i.today{outline:2px solid var(--c);outline-offset:1px}
+.hold{position:relative;flex:none;width:68px;height:68px;border-radius:50%;border:0;background:var(--soft);color:var(--accent);display:grid;place-items:center;
+  touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;padding:0;font-size:12px;font-weight:700;transition:transform .15s}
+.hold .r{position:absolute;inset:2px;width:64px;height:64px}
+.hold .r circle{fill:none;stroke:var(--accent);stroke-width:5;stroke-linecap:round;stroke-dasharray:183;stroke-dashoffset:183;transform:rotate(-90deg);transform-origin:center}
+.hold.holding{transform:scale(.94)}
+.hold.holding .r circle{transition:stroke-dashoffset .7s linear;stroke-dashoffset:0}
+.hold.done{background:var(--accent);color:var(--accent-ink)}
+.hold.done svg:not(.r){width:26px;height:26px}
+.hold.pop{animation:pop .45s ease-out}
+@keyframes pop{40%{transform:scale(1.18)}}
+.nudge{margin:0 16px 14px;padding:10px 12px;border-radius:12px;background:var(--soft);font-size:14px}
+.nudge .btns{margin-top:8px}
+.tip{background:var(--soft);border-color:transparent}
+.tpl{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tplc{text-align:left;border:1px solid var(--line);border-left:4px solid var(--c);background:var(--card);border-radius:14px;padding:11px 12px;display:grid;gap:3px;align-content:start}
+.tplc b{font-size:15px;line-height:1.3}
+.tplc span{font-size:12px;color:var(--mute);line-height:1.35}
+.wprog{display:flex;gap:4px}
+.wprog i{flex:1;height:5px;border-radius:5px;background:var(--line)}
+.wprog i.on{background:var(--accent)}
+.wq{font-size:21px;line-height:1.3;margin:0}
+.why{font-size:14px;color:var(--mute);margin:-6px 0 0}
+.law-h{font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--accent)}
+.laws{display:grid;gap:8px}
+.law{padding:10px 12px;border-radius:12px;background:var(--bg);font-size:14px;display:grid;gap:3px}
+.idcard{padding:14px 16px;border-radius:16px;background:color-mix(in srgb,var(--c) 12%,var(--card));border-left:5px solid var(--c)}
+.idt{font-size:20px;font-weight:700;line-height:1.3}
+.intent{margin:0;font-size:16px;font-weight:500}
+.lvl{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px;margin-bottom:6px;font-size:14px}
+.lvl span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--line);font-size:12px;font-weight:700;flex:none}
+.lvl.on{border-color:var(--accent);border-width:2px}
+.lvl.on span,.lvl.past span{background:var(--accent);color:var(--accent-ink)}
+.heat{display:grid;grid-template-rows:repeat(7,1fr);grid-auto-flow:column;grid-auto-columns:1fr;gap:3px;max-width:300px}
+.heat i{aspect-ratio:1;border-radius:3px;background:var(--line)}
+.heat i.on{background:var(--c)}
+.heat i.fut{opacity:.35}
 /* banners, nav, fab, sheet, toast */
 .install .x{position:absolute;top:6px;right:6px}
 .install p,.banner p{margin:6px 0 10px;font-size:14px;color:var(--mute)}
@@ -198,7 +244,7 @@ nav .navadd{flex:none;width:52px;height:52px;margin:-14px 6px 0;border-radius:18
   box-shadow:0 6px 18px rgba(16,24,40,.22);display:grid;place-items:center;padding:0}
 .sheet{position:fixed;inset:0;z-index:30;display:flex;align-items:flex-end;justify-content:center}
 .sheet-bg{position:absolute;inset:0;background:rgba(18,24,21,.42)}
-.sheet-panel{position:relative;width:100%;max-width:560px;max-height:92vh;overflow:auto;background:var(--card);border-radius:24px 24px 0 0;
+.sheet-panel{position:relative;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;overflow-x:hidden;background:var(--card);border-radius:24px 24px 0 0;
   padding:8px 16px calc(24px + env(safe-area-inset-bottom));animation:up .22s ease-out}
 @keyframes up{from{transform:translateY(40px);opacity:0}}
 .sheet-head{display:flex;justify-content:space-between;align-items:center;position:sticky;top:-8px;background:var(--card);padding:10px 0;z-index:1}
@@ -223,7 +269,7 @@ nav .navadd{flex:none;width:52px;height:52px;margin:-14px 6px 0;border-radius:18
   <main class="wrap" id="view"></main>
   <nav class="tabs" aria-label="Sections"><div>
     <button data-a="tab" data-id="today"><span data-icon="sun"></span>Today</button>
-    <button data-a="tab" data-id="week"><span data-icon="cal"></span>Week</button>
+    <button data-a="tab" data-id="habits"><span data-icon="sprout"></span>Habits</button>
     <button class="navadd" data-a="add" aria-label="Add something"><span data-icon="plus"></span></button>
     <button data-a="tab" data-id="focus"><span data-icon="timer"></span>Focus</button>
     <button data-a="tab" data-id="me"><span data-icon="user"></span>Me</button>
@@ -276,6 +322,7 @@ const I = {
   cal: svg('<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>'),
   inbox: svg('<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>'),
   timer: svg('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>'),
+  sprout: svg('<path d="M12 21v-9"/><path d="M12 12C12 7.5 9 5 4 5c0 4.5 3 7 8 7z"/><path d="M12 14c0-4 3-6.5 8-6.5 0 4-3 6.5-8 6.5z"/>'),
   user: svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'),
 };
 
@@ -595,7 +642,8 @@ function weekStrip() {
     ${days.map((d) => {
       const busy = S.items.some((it) => it.kind !== 'habit' && occurs(it, d));
       return `<button class="dchip ${d === selDay ? 'on' : ''} ${d === t ? 'today' : ''}" data-a="pickDay" data-id="${d}">${WD[dow(d)]}<b>${+d.slice(8)}</b><i class="${busy ? '' : 'none'}"></i></button>`;
-    }).join('')}</div><button class="icon-btn" data-a="shiftDay" data-id="7" aria-label="Next week">${I.right}</button></div>`;
+    }).join('')}</div><button class="icon-btn" data-a="shiftDay" data-id="7" aria-label="Next week">${I.right}</button></div>
+    <div style="text-align:right"><button class="link" data-a="tab" data-id="week">See the whole week →</button></div>`;
 }
 function nowCard() {
   const d = today(), nm = nowMin();
@@ -700,7 +748,7 @@ function vWeek() {
   const ws = weekStart || startOfWeek(today()), t = today();
   const days = Array.from({ length: 7 }, (_, i) => addDays(ws, i));
   const label = `${new Date(ws + 'T00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} – ${new Date(days[6] + 'T00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}`;
-  return `<div class="hdr"><div><div class="date">Week view</div><h1 class="ttl">${label}</h1></div>
+  return `<button class="link" data-a="tab" data-id="today">← Back to today</button><div class="hdr"><div><div class="date">Week view</div><h1 class="ttl">${label}</h1></div>
     <div class="btns"><button class="icon-btn" data-a="shiftWeek" data-id="-7" aria-label="Previous week">${I.left}</button><button class="icon-btn" data-a="shiftWeek" data-id="7" aria-label="Next week">${I.right}</button></div></div>
     ${ws !== startOfWeek(t) ? `<button class="link" data-a="shiftWeek" data-id="0">This week</button>` : ''}
     ${days.map((d) => {
@@ -754,7 +802,7 @@ function vFocus() {
 function vMe() {
   const st = notifState(), s = S.settings;
   const stLabel = { granted: '✅ On', default: 'Not allowed yet', denied: '⛔ Blocked in settings', 'ios-install': 'Install the app first (iPhone)', unsupported: 'Not supported in this browser' }[st];
-  const habits = S.items.filter((i) => i.kind === 'habit');
+  const habits = S.items.filter((i) => i.kind === 'habit' && !i.atomic);
   return `<h1 class="ttl">Me</h1>
   <section class="card"><div class="pad grid2">
     <label>Name<input value="${esc(S.profile.name)}" data-c="pname" autocomplete="given-name"></label>
@@ -800,7 +848,7 @@ function openSheet(it, preset = {}) {
   document.body.style.overflow = 'hidden';
   if (D._new) setTimeout(() => $('#sheet input[data-s=title]')?.focus(), 60);
 }
-function closeSheet() { $('#sheet').hidden = true; D = null; document.body.style.overflow = ''; }
+function closeSheet() { $('#sheet').hidden = true; D = null; W = null; document.body.style.overflow = ''; }
 function renderSheet() {
   const r = D.repeat, isHabit = D.kind === 'habit', t = today(), tm = addDays(t, 1);
   const when = !D.date ? 'someday' : D.date === t ? 'today' : D.date === tm ? 'tomorrow' : 'date';
@@ -886,7 +934,7 @@ function render() {
     return;
   }
   $('#ob').hidden = true; $('#app').hidden = false;
-  $('#view').innerHTML = { today: vToday, week: vWeek, focus: vFocus, me: vMe }[tab]();
+  $('#view').innerHTML = { today: vToday, week: vWeek, habits: vHabits, focus: vFocus, me: vMe }[tab]();
   document.querySelectorAll('nav [data-a=tab]').forEach((b) => b.classList.toggle('on', b.dataset.id === tab));
 }
 document.querySelectorAll('[data-icon]').forEach((el) => { el.innerHTML = I[el.dataset.icon]; });
@@ -940,7 +988,7 @@ const A = {
   add() { if (tab !== 'week') tab = 'today'; render(); openSheet(null); },
   addAt(time, d) { openSheet(null, { date: d, time }); },
   addHabit() { openSheet(null, { kind: 'habit', icon: '⭐', date: today(), time: '08:00', dur: 15, repeat: { t: 'daily', days: [] } }); moreOpen = true; renderSheet(); },
-  edit(id) { const it = item(id); if (it) openSheet(it); },
+  edit(id) { const it = item(id); if (it) it.atomic ? viewHabit(id) : openSheet(it); },
   done(id, d) {
     const it = item(id);
     if (it.goal) { const n = count(it, d); it.done[d] = n >= it.goal ? it.goal - 1 : n + 1; if (it.done[d] === it.goal) toast('💧 Water goal reached!'); }
@@ -1074,7 +1122,7 @@ document.addEventListener('click', (e) => {
   A[b.dataset.a](b.dataset.id, b.dataset.d, b);
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && D) closeSheet();
+  if (e.key === 'Escape' && !$('#sheet').hidden) closeSheet();
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.bc[data-a]')) { e.preventDefault(); A.edit(e.target.dataset.id); }
 });
 document.addEventListener('input', (e) => {
@@ -1095,6 +1143,308 @@ document.addEventListener('submit', (e) => {
   if (f.dataset.f && FORMS[f.dataset.f]) { e.preventDefault(); FORMS[f.dataset.f](f); }
 });
 $('#toast').addEventListener('click', () => $('#toast').classList.remove('show'));
+
+/* ---------- habit builder (inspired by the four laws in Atomic Habits) ---------- */
+const TIPS = [
+  'Start so small it feels almost too easy. You can always grow it later.',
+  'Missing once is an accident. Try not to miss twice in a row.',
+  'Every time you show up, you cast a vote for the person you want to be.',
+  'Make the cue impossible to miss: book on the pillow, shoes by the door.',
+  'Tie a new habit to something you already do every day.',
+  'Prepare the night before so starting takes zero effort.',
+  'Pair the habit with something you enjoy, and only enjoy it then.',
+  'Seeing your streak grow is its own little reward. Keep the chain going.',
+  'Focus on showing up, not on results. Results follow consistency.',
+  'Give each space one main use. Your environment shapes your behaviour.',
+  'Breaking a bad habit? Remove the cue so you don’t see it.',
+  'Add friction to bad habits: log out, unplug, put it out of reach.',
+  'Spend time with people for whom your new habit is normal.',
+  'Reward yourself right after, so your brain wants to do it again.',
+  'Progress lives in the boring days. Show up anyway, even in a small way.',
+  'Plan for when, not if: “I will ___ at ___ in ___.”',
+  'On a bad day, do the 2-minute version. It still counts.',
+  'Ask “who do I want to become?” before “what do I want to achieve?”',
+];
+const TEMPLATES = [
+  { key: 'tidy', icon: '🧹', color: 'teal', name: 'Keep a tidy home', identity: 'keeps a calm, tidy home',
+    levels: ['Put away 5 things', '10-minute tidy of one room', '15-minute reset of the main rooms', 'Daily reset + one deep-clean zone each week'],
+    time: '20:30', place: 'in the living room', stack: 'finish dinner', cue: 'Keep a small basket where clutter gathers',
+    bundle: 'my favourite podcast or playlist', why: 'A clear space helps me think and relax', prep: 'Keep cleaning supplies in each room', reward: 'Sit for a minute and enjoy the clear space' },
+  { key: 'tech', icon: '💻', color: 'blue', name: 'Grow tech skills', identity: 'keeps learning and building',
+    levels: ['Read one page of docs or a tutorial', '25 minutes of focused practice', 'Build or fix one small thing', 'Ship a small project every week'],
+    time: '07:30', place: 'at my desk', stack: 'make my morning coffee', cue: 'Leave the laptop open on the lesson I’m on',
+    bundle: 'my favourite coffee', why: 'Growing my skills opens new doors for my career', prep: 'Pick tomorrow’s topic before I close the laptop', reward: 'Write one line about what I learned' },
+  { key: 'read', icon: '📚', color: 'purple', name: 'Read every day', identity: 'reads every day',
+    levels: ['Read 1 page', 'Read 10 pages', 'Read for 20 minutes', 'Read 30 minutes and note one idea'],
+    time: '21:30', place: 'in bed', stack: 'get into bed', cue: 'Keep the book on my pillow',
+    bundle: 'a cup of herbal tea', why: 'Reading makes me calmer and wiser', prep: 'Choose my next book before I finish this one', reward: 'Mark the page with today’s date' },
+  { key: 'fit', icon: '🏋️', color: 'green', name: 'Get fit and strong', identity: 'moves their body every day',
+    levels: ['Put on workout clothes', '10 push-ups and 10 squats', '20-minute workout', '40-minute strength session'],
+    time: '07:00', place: 'at home', stack: 'brush my teeth', cue: 'Lay out workout clothes the night before',
+    bundle: 'my most energising playlist', why: 'I want energy and strength for the long run', prep: 'Plan the workout the night before', reward: 'Log it and watch the streak grow' },
+  { key: 'sleep', icon: '🌙', color: 'purple', name: 'Sleep better', identity: 'protects their sleep',
+    levels: ['Set a bedtime alarm', 'Screens off 15 minutes before bed', 'Screens off 30 minutes, lights dimmed', 'Same bedtime every night, 7–8 hours'],
+    time: '22:00', place: 'in the bedroom', stack: 'finish my evening skincare', cue: 'Charge the phone outside the bedroom',
+    bundle: 'a calming playlist', why: 'Good sleep makes every other habit easier', prep: 'Keep a book by the bed instead of the phone', reward: 'Notice how rested I feel in the morning' },
+  { key: 'mind', icon: '🧘', color: 'teal', name: 'Be calm and present', identity: 'is calm and present',
+    levels: ['Take 3 slow breaths', '2 minutes of meditation', '10 minutes of meditation', '20 minutes of meditation'],
+    time: '06:45', place: 'in my quiet corner', stack: 'wake up and drink water', cue: 'Keep a cushion where I can see it',
+    bundle: 'my favourite tea afterwards', why: 'A calm mind makes better choices', prep: 'Keep the meditation timer on my home screen', reward: 'Note my mood in one word' },
+  { key: 'journal', icon: '✍️', color: 'yellow', name: 'Journal and reflect', identity: 'reflects on their days',
+    levels: ['Write one sentence about today', 'Write 3 things I’m grateful for', '10 minutes of journaling', 'Weekly review of what worked'],
+    time: '21:45', place: 'at my desk', stack: 'plan tomorrow', cue: 'Keep the journal and pen on the desk',
+    bundle: 'soft music', why: 'Reflecting helps me learn from each day', prep: 'Keep a pen clipped to the journal', reward: 'Re-read a happy entry from last week' },
+  { key: 'money', icon: '💰', color: 'green', name: 'Be smart with money', identity: 'is smart with money',
+    levels: ['Check my balance', 'Log today’s spending', 'Move a small amount to savings', 'Weekly budget review'],
+    time: '21:00', place: 'on my phone', stack: 'finish dinner', cue: 'Put the budget app on my home screen',
+    bundle: 'my evening tea', why: 'Money calm means life calm', prep: 'Set up automatic savings', reward: 'Watch the savings number grow' },
+  { key: 'phone', type: 'break', icon: '📵', color: 'orange', name: 'Less phone scrolling', identity: 'is in control of their phone',
+    levels: ['No phone for the first 10 minutes after waking', 'No phone in bed', 'Social apps only after 6 PM', 'Under 1 hour of social media a day'],
+    cue: 'Charge the phone outside the bedroom and turn off non-essential notifications',
+    bundle: 'Remember what scrolling costs me: sleep, focus and time with people', why: 'I want my attention back',
+    prep: 'Log out of social apps and move them off the home screen', reward: 'Tell a friend my goal and check in each week' },
+  { key: 'snack', type: 'break', icon: '🍟', color: 'pink', name: 'Less junk food', identity: 'eats to feel good',
+    levels: ['No snacks after 9 PM', 'Swap one junk snack a day for fruit', 'No sugary drinks', 'Junk food only as a weekend treat'],
+    cue: 'Don’t keep junk food at home or in sight', bundle: 'Picture how sluggish I feel afterwards', why: 'I want steady energy all day',
+    prep: 'Keep fruit and nuts ready to grab', reward: 'Put the money I save towards something I want' },
+];
+const LAWS = {
+  build: [['🔎', 'Make it obvious'], ['✨', 'Make it attractive'], ['🪶', 'Make it easy'], ['🎉', 'Make it satisfying']],
+  break: [['🙈', 'Make it invisible'], ['🚫', 'Make it unattractive'], ['🧱', 'Make it difficult'], ['😑', 'Make it unsatisfying']],
+};
+const atomics = () => S.items.filter((i) => i.atomic);
+const lc = (s) => (s ? s[0].toLowerCase() + s.slice(1) : s);
+function hStreak(it) { let n = 0, d = today(); if (!it.done[d]) d = addDays(d, -1); while (it.done[d] && n < 3650) { n++; d = addDays(d, -1); } return n; }
+function hBest(it) {
+  let best = 0, run = 0, prev = null;
+  Object.keys(it.done).filter((k) => it.done[k]).sort().forEach((d) => { run = prev && daysBetween(prev, d) === 1 ? run + 1 : 1; best = Math.max(best, run); prev = d; });
+  return best;
+}
+function hRate(it, n) {
+  const span = Math.max(1, Math.min(n, daysBetween(it.atomic?.created || today(), today())));
+  let c = 0; for (let i = 1; i <= span; i++) if (it.done[addDays(today(), -i)]) c++;
+  return c / span;
+}
+function intention(it) {
+  const a = it.atomic;
+  if (a.type === 'break') return `To stay in control, I will: ${lc(it.title)}.`;
+  let s = a.stack ? `After I ${a.stack}, I will ${lc(it.title)}` : `I will ${lc(it.title)}`;
+  if (it.time) s += ` at ${fmtTime(it.time)}`;
+  if (a.place) s += ` ${a.place}`;
+  return s + '.';
+}
+function holdBtn(it) {
+  const done = isDone(it, today());
+  return `<button class="hold ${done ? 'done' : ''}" data-hold="${it.id}" aria-label="${done ? 'Done. Tap to undo' : 'Press and hold to complete'}">
+    <svg class="r" viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><circle cx="32" cy="32" r="29"/></svg>${done ? I.check : '<span class="hl">Hold</span>'}</button>`;
+}
+function habitNudge(it) {
+  const a = it.atomic, t = today(), y = addDays(t, -1);
+  const atLevel = daysBetween(a.levelStart || a.created, t);
+  if (a.level < a.levels.length - 1 && atLevel >= 14 && hRate(it, 14) >= .8 && !(a.snooze >= t))
+    return `<div class="nudge">🌱 <b>You showed up ${Array.from({ length: 14 }, (_, i) => it.done[addDays(t, -i - 1)]).filter(Boolean).length} of the last 14 days.</b> Ready to grow?<br>Next level: ${esc(a.levels[a.level + 1])}
+      <div class="btns"><button class="btn sm" data-a="levelUp" data-id="${it.id}">Level up</button><button class="btn sm ghost" data-a="snooze" data-id="${it.id}">Not yet</button></div></div>`;
+  if (a.level > 0 && atLevel >= 7 && hRate(it, 7) < .4)
+    return `<div class="nudge">💛 <b>This level feels heavy, and that’s okay.</b> Consistency beats intensity.<br>Step back to: ${esc(a.levels[a.level - 1])}
+      <div class="btns"><button class="btn sm" data-a="levelDown" data-id="${it.id}">Make it easier</button></div></div>`;
+  if (daysBetween(a.created, t) >= 2 && !it.done[y] && !it.done[t])
+    return `<div class="nudge">Missed yesterday? <b>Try not to miss twice.</b> Even the tiniest version counts today.</div>`;
+  return '';
+}
+function habitCard(it) {
+  const a = it.atomic, t = today(), st = hStreak(it);
+  const days = Array.from({ length: 7 }, (_, i) => addDays(t, i - 6));
+  return `<section class="card hab" style="--c:${col(it.color)}"><div class="pad habtop">
+    <div class="body" data-a="viewHabit" data-id="${it.id}" style="cursor:pointer">
+      <div class="note">I am someone who ${esc(a.identity || '…')}</div>
+      <div class="title big">${esc(it.icon)} ${esc(it.title)}</div>
+      <div class="sub"><span class="tag">${a.type === 'break' ? 'Step' : 'Level'} ${a.level + 1} of ${a.levels.length}</span>${it.time ? `<span>${fmtTime(it.time)}</span>` : ''}${st ? `<span>🔥 ${st} day${st > 1 ? 's' : ''}</span>` : ''}</div>
+      <div class="dots">${days.map((d) => `<span><i class="${it.done[d] ? 'on' : ''} ${d === t ? 'today' : ''}"></i>${WD[dow(d)][0]}</span>`).join('')}</div>
+    </div>${holdBtn(it)}</div>${habitNudge(it)}</section>`;
+}
+function vHabits() {
+  const hs = atomics();
+  const tip = TIPS[Math.floor(Date.now() / 864e5) % TIPS.length];
+  return `<h1 class="ttl">Habits</h1>
+  <p class="lead">Tiny habits, done daily, add up to big change. Start small, show up, and grow one level at a time.</p>
+  <section class="card tip"><div class="pad"><div class="lbl">💡 Today’s tip</div>${esc(tip)}</div></section>
+  ${hs.length ? hs.map(habitCard).join('') : `<section class="card"><div class="pad stack"><b>Build your first habit</b>
+    <div class="note">Pick a ready-made plan or make your own. It takes about a minute.</div>
+    <div class="tpl">${TEMPLATES.slice(0, 4).map(tplCard).join('')}</div></div></section>`}
+  <button class="btn big" data-a="newHabit">＋ Build a new habit</button>
+  <p class="note center" style="margin-top:18px">Inspired by the four laws of behaviour change in <i>Atomic Habits</i> by James Clear. Not affiliated.</p>`;
+}
+const tplCard = (t) => `<button class="tplc" style="--c:${col(t.color)}" data-a="useTemplate" data-id="${t.key}"><b>${t.icon} ${esc(t.name)}</b><span>${t.type === 'break' ? 'Break a habit · ' : ''}Start: ${esc(t.levels[0])}</span></button>`;
+function heatmap(it) {
+  const t = today(), start = addDays(startOfWeek(t), -77);
+  return `<div class="heat">${Array.from({ length: 84 }, (_, i) => { const d = addDays(start, i); return `<i class="${it.done[d] ? 'on' : ''} ${d > t ? 'fut' : ''}" title="${d}"></i>`; }).join('')}</div>`;
+}
+function showSheet(html) { $('#sheetPanel').innerHTML = html; $('#sheet').hidden = false; document.body.style.overflow = 'hidden'; }
+function viewHabit(id) {
+  const it = item(id), a = it.atomic, L = LAWS[a.type];
+  D = null; W = null;
+  const groups = a.type === 'build'
+    ? [[a.stack && `After I ${a.stack}`, it.time && `At ${fmtTime(it.time)}`, a.place && `Where: ${a.place}`, a.cue && `Cue: ${a.cue}`],
+       [a.bundle && `Pair it with ${a.bundle}`, a.why && `Why: ${a.why}`],
+       [`Start with: ${a.levels[0]}`, a.prep && `Prepare: ${a.prep}`],
+       [a.reward && `Reward: ${a.reward}`, 'Hold the circle to tick it off and watch your streak grow']]
+    : [[a.cue], [a.bundle, a.why && `Why: ${a.why}`], [a.prep], [a.reward]];
+  const days30 = Math.round(hRate(it, 30) * 100);
+  showSheet(`<div class="stack">
+    <div class="sheet-head"><button class="link" data-a="closeSheet">Close</button><b>${esc(it.icon)} Habit</b><button class="link" data-a="editHabit" data-id="${id}">Edit</button></div>
+    <div class="idcard" style="--c:${col(it.color)}"><div class="note">I am someone who</div><div class="idt">${esc(a.identity || '…')}</div></div>
+    <p class="intent">${esc(intention(it))}</p>
+    <div class="card" style="margin:0"><div class="pad stats"><div><b>${hStreak(it)}</b><span class="note">day streak</span></div><div><b>${hBest(it)}</b><span class="note">best streak</span></div><div><b>${days30}%</b><span class="note">last 30 days</span></div></div></div>
+    <div style="--c:${col(it.color)}"><div class="lbl">Last 12 weeks</div>${heatmap(it)}</div>
+    <div><div class="lbl">${a.type === 'break' ? 'Steps' : 'Levels'} · grow one step at a time</div>
+      ${a.levels.map((l, i) => `<button class="lvl ${i === a.level ? 'on' : ''} ${i < a.level ? 'past' : ''}" data-a="setLevel" data-id="${id}" data-d="${i}"><span>${i < a.level ? '✓' : i + 1}</span>${esc(l)}</button>`).join('')}</div>
+    <div class="laws">${L.map(([ic, name], i) => { const v = groups[i].filter(Boolean); return `<div class="law"><b>${ic} ${name}</b>${v.length ? v.map((x) => `<div>${esc(x)}</div>`).join('') : '<div class="note">Not set yet. Tap Edit to add.</div>'}</div>`; }).join('')}</div>
+    <button class="btn danger" data-a="delHabit" data-id="${id}">Delete habit</button></div>`);
+}
+
+/* Step-by-step builder: one question per screen. */
+let W = null;
+const WTITLES = ['Start', 'Who', 'Easy', 'Obvious', 'Attractive', 'Satisfying', 'Review'];
+const blankHabit = () => ({ type: 'build', icon: '🌱', color: 'green', identity: '', levels: ['', '', '', ''], prep: '', time: '', place: '', stack: '', cue: '', bundle: '', why: '', reward: '', rem: true });
+function openWizard(step = 0, edit = null, d = blankHabit()) { D = null; W = { step, edit, d }; renderW(); $('#sheet').hidden = false; document.body.style.overflow = 'hidden'; }
+function applyTemplate(key) {
+  const t = TEMPLATES.find((x) => x.key === key);
+  Object.assign(W.d, blankHabit(), { ...t, type: t.type || 'build', levels: [...t.levels, '', '', '', ''].slice(0, 4), rem: !!t.time });
+  W.step = 1;
+}
+const wIn = (f, ph, v = W.d[f]) => `<input data-w="${f}" value="${esc(v)}" placeholder="${esc(ph)}" autocomplete="off">`;
+function renderW() {
+  const d = W.d, brk = d.type === 'break', L = LAWS[d.type], s = W.step;
+  let body = '';
+  if (s === 0) body = `<h2 class="wq">What habit do you want to build?</h2><p class="why">Pick a ready-made plan (you can change anything) or start from scratch.</p>
+    <div class="tpl">${TEMPLATES.map(tplCard).join('')}<button class="tplc" style="--c:var(--mute)" data-a="wScratch"><b>✏️ Start from scratch</b><span>Build your own plan</span></button></div>`;
+  if (s === 1) body = `<h2 class="wq">Who do you want to become?</h2>
+    <p class="why">Lasting habits come from identity. Each time you do it, you prove to yourself who you are.</p>
+    <div class="seg">${['build', 'break'].map((k) => `<button class="${d.type === k ? 'on' : ''}" data-a="wType" data-id="${k}">${k === 'build' ? 'Build a good habit' : 'Break a bad habit'}</button>`).join('')}</div>
+    <label>I am someone who…${wIn('identity', brk ? 'e.g. is in control of their phone' : 'e.g. keeps a calm, tidy home')}</label>
+    <div class="chips wrap">${TEMPLATES.filter((t) => (t.type || 'build') === d.type).map((t) => chip(d.identity === t.identity, 'wIdentity', t.key, esc(t.identity))).join('')}</div>
+    <div><div class="lbl">Icon</div><div class="chips">${['🌱', '🧹', '💻', '📚', '🏋️', '🏃', '🌙', '🧘', '✍️', '💰', '💧', '🥗', '🎨', '🎵', '📵', '🍟', '🚭', '⭐'].map((i) => chip(d.icon === i, 'wIcon', i, i)).join('')}</div></div>`;
+  if (s === 2) body = `<div class="law-h">${L[2][0]} ${L[2][1]}</div>
+    <h2 class="wq">${brk ? 'What will you change first?' : 'What’s the tiniest version?'}</h2>
+    <p class="why">${brk ? 'Pick one small, specific step. Add harder steps for later.' : 'Make step 1 take two minutes or less, so easy you can’t say no. Add bigger levels to grow into later.'}</p>
+    ${d.levels.map((v, i) => `<label><span>${brk ? 'Step' : 'Level'} ${i + 1}${i ? ' <span class="note">(optional, for later)</span>' : brk ? '' : ' · the 2-minute version'}</span><input data-w="lv${i}" value="${esc(v)}" placeholder="${esc(i ? 'A bit more…' : brk ? 'e.g. No phone in bed' : 'e.g. Put away 5 things')}" autocomplete="off"></label>`).join('')}
+    <label>${brk ? 'Add friction: make it harder to do' : 'Make it easier: prepare in advance'}${wIn('prep', brk ? 'e.g. Log out of the app' : 'e.g. Lay out clothes the night before')}</label>`;
+  if (s === 3) body = `<div class="law-h">${L[0][0]} ${L[0][1]}</div>
+    ${brk ? `<h2 class="wq">How will you hide the cue?</h2><p class="why">Out of sight, out of mind. Remove what triggers the habit.</p>
+      <label>Remove the cue${wIn('cue', 'e.g. Charge the phone outside the bedroom')}</label>`
+    : `<h2 class="wq">When and where will you do it?</h2><p class="why">A clear plan beats motivation. Link it to something you already do every day.</p>
+      <label>After I…${wIn('stack', 'e.g. finish dinner')}</label>
+      <div class="grid2"><label><span>Time <span class="note">(optional)</span></span><input type="time" data-w="time" value="${d.time}"></label><label>Where${wIn('place', 'e.g. in the living room')}</label></div>
+      <label>A visual cue to remind you${wIn('cue', 'e.g. Book on my pillow')}</label>`}`;
+  if (s === 4) body = `<div class="law-h">${L[1][0]} ${L[1][1]}</div>
+    ${brk ? `<h2 class="wq">What does this habit cost you?</h2><p class="why">Remind yourself of the downside, so it loses its pull.</p>
+      <label>Reframe it${wIn('bundle', 'e.g. Scrolling steals my sleep and focus')}</label>`
+    : `<h2 class="wq">How can you make it enjoyable?</h2><p class="why">Pair it with something you love, and only enjoy that thing while doing the habit.</p>
+      <label>Only while doing it, I get…${wIn('bundle', 'e.g. my favourite podcast')}</label>`}
+    <label>Why does this matter to you?${wIn('why', 'e.g. A clear space helps me relax')}</label>`;
+  if (s === 5) body = `<div class="law-h">${L[3][0]} ${L[3][1]}</div>
+    ${brk ? `<h2 class="wq">Who or what will keep you honest?</h2><p class="why">A habit is easier to break when slipping up has a small cost.</p>
+      <label>Accountability${wIn('reward', 'e.g. Weekly check-in with a friend')}</label>`
+    : `<h2 class="wq">How will you reward yourself?</h2><p class="why">A small win right after tells your brain: do that again. Ticking it off and seeing your streak grow helps too.</p>
+      <label>Right after, I will…${wIn('reward', 'e.g. Enjoy the clear space for a minute')}</label>
+      ${d.time ? `<label class="inline"><input type="checkbox" data-w="rem" ${d.rem ? 'checked' : ''}> Remind me at ${fmtTime(d.time)}</label>` : '<div class="note">Add a time on the “Obvious” step to get reminders.</div>'}`}`;
+  if (s === 6) {
+    const lv = d.levels.map((x) => x.trim()).filter(Boolean);
+    const fake = { title: lv[0] || '…', time: brk ? '' : d.time, atomic: { ...d } };
+    body = `<h2 class="wq">Your habit plan</h2>
+      <div class="idcard" style="--c:${col(d.color)}"><div class="note">I am someone who</div><div class="idt">${esc(d.identity || '…')}</div></div>
+      <p class="intent">${esc(intention(fake))}</p>
+      <div class="laws">${[[L[0], brk ? [d.cue] : [d.stack && `After I ${d.stack}`, d.place, d.cue]], [L[1], [d.bundle, d.why]], [L[2], [...lv.map((x, i) => `${i + 1}. ${x}`), d.prep]], [L[3], [d.reward]]]
+        .map(([[ic, n], v]) => { v = v.filter(Boolean); return `<div class="law"><b>${ic} ${n}</b>${v.length ? v.map((x) => `<div>${esc(x)}</div>`).join('') : '<div class="note">Skipped</div>'}</div>`; }).join('')}</div>`;
+  }
+  const last = s === 6;
+  $('#sheetPanel').innerHTML = `<div class="stack">
+    <div class="sheet-head"><button class="link" data-a="closeSheet">Cancel</button><b>${W.edit ? 'Edit habit' : 'New habit'}</b>${W.edit ? '<button class="link" data-a="wSave">Save</button>' : '<span style="width:44px"></span>'}</div>
+    ${s ? `<div class="wprog">${WTITLES.slice(1).map((n, i) => `<i class="${i < s ? 'on' : ''}"></i>`).join('')}</div>` : ''}
+    ${body}
+    ${s ? `<div class="obnav"><button class="btn ghost" data-a="wBack">Back</button>${last ? '<button class="btn" data-a="wSave">Save habit</button>' : '<button class="btn" data-a="wNext">Next</button>'}</div>` : ''}
+  </div>`;
+}
+function saveWizard() {
+  const d = W.d, levels = d.levels.map((x) => x.trim()).filter(Boolean), t = today();
+  if (!levels.length) { toast('Add a tiny first step'); W.step = 2; return renderW(); }
+  const brk = d.type === 'break', time = brk ? '' : d.time;
+  const atomic = { identity: d.identity.trim(), type: d.type, levels, stack: d.stack.trim(), place: d.place.trim(), cue: d.cue.trim(), bundle: d.bundle.trim(), why: d.why.trim(), prep: d.prep.trim(), reward: d.reward.trim() };
+  const rem = d.rem && time ? [0] : [];
+  if (W.edit) {
+    const it = item(W.edit), a0 = it.atomic;
+    Object.assign(atomic, { level: Math.min(a0.level, levels.length - 1), levelStart: a0.levelStart, created: a0.created, snooze: a0.snooze });
+    Object.assign(it, { icon: d.icon, color: d.color, time, rem, dur: time ? it.dur || 10 : 0, title: levels[atomic.level], atomic });
+  } else {
+    S.items.push({ id: uid(), kind: 'habit', icon: d.icon, color: d.color, title: levels[0], date: t, time, dur: time ? 10 : 0, repeat: { t: 'daily', days: [] }, rem, done: {}, note: '',
+      atomic: { ...atomic, level: 0, levelStart: t, created: t } });
+  }
+  const isNew = !W.edit;
+  save(); closeSheet(); tab = 'habits'; render(); scrollTo(0, 0);
+  toast(isNew ? 'Habit added 🌱' : 'Habit saved', isNew ? `Start today with: ${levels[0]}` : '');
+  if (rem.length) askNotif();
+}
+function setLevel(it, lv) { const a = it.atomic; a.level = lv; a.levelStart = today(); it.title = a.levels[lv]; save(); }
+Object.assign(A, {
+  newHabit() { openWizard(0); },
+  useTemplate(key) { if (W) { applyTemplate(key); renderW(); } else { openWizard(0); applyTemplate(key); renderW(); } },
+  wScratch() { W.d = blankHabit(); W.step = 1; renderW(); },
+  wType(k) { W.d.type = k; if (k === 'break' && W.d.icon === '🌱') W.d.icon = '🚭'; renderW(); },
+  wIdentity(key) { const t = TEMPLATES.find((x) => x.key === key); W.d.identity = t.identity; renderW(); },
+  wIcon(i) { W.d.icon = i; renderW(); },
+  wNext() { if (W.step === 2 && !W.d.levels[0].trim()) return toast('Add a tiny first step'); W.step = Math.min(6, W.step + 1); renderW(); $('#sheetPanel').scrollTop = 0; },
+  wBack() { W.step = Math.max(W.edit ? 1 : 0, W.step - 1); renderW(); $('#sheetPanel').scrollTop = 0; },
+  wSave: () => saveWizard(),
+  viewHabit(id) { viewHabit(id); },
+  editHabit(id) {
+    const it = item(id), a = it.atomic;
+    openWizard(1, id, { ...blankHabit(), ...a, icon: it.icon, color: it.color, time: it.time, rem: !!it.rem.length, levels: [...a.levels, '', '', '', ''].slice(0, 4) });
+  },
+  setLevel(id, lv) { setLevel(item(id), +lv); render(); viewHabit(id); toast(`Now on level ${+lv + 1}`); },
+  levelUp(id) { const it = item(id); setLevel(it, it.atomic.level + 1); render(); toast('Level up! 🌱', `New goal: ${it.title}`); },
+  levelDown(id) { const it = item(id); setLevel(it, it.atomic.level - 1); render(); toast('Made it easier 💛', 'Small and steady wins.'); },
+  snooze(id) { item(id).atomic.snooze = addDays(today(), 3); save(); render(); },
+  delHabit(id) { if (!confirm('Delete this habit and its history?')) return; S.items = S.items.filter((x) => x.id !== id); save(); closeSheet(); render(); },
+});
+document.addEventListener('input', (e) => {
+  const f = e.target.dataset.w;
+  if (!W || !f || e.target.type === 'checkbox') return;
+  if (f.startsWith('lv')) W.d.levels[+f.slice(2)] = e.target.value; else W.d[f] = e.target.value;
+});
+document.addEventListener('change', (e) => { if (W && e.target.dataset.w === 'rem') W.d.rem = e.target.checked; if (W && e.target.dataset.w === 'time') renderW(); });
+
+/* Press-and-hold to complete: a deliberate, satisfying action. */
+let holdTimer = null, holdEl = null, justHeld = false;
+function completeHold(b) {
+  const it = item(b.dataset.hold), t = today();
+  it.done[t] = true; save();
+  if (navigator.vibrate) navigator.vibrate([25, 40, 70]);
+  play('chime', .14);
+  justHeld = true; setTimeout(() => { justHeld = false; }, 600);
+  render();
+  document.querySelector(`[data-hold="${it.id}"]`)?.classList.add('pop');
+  toast('Done ✨', it.atomic?.identity ? `One more vote for someone who ${it.atomic.identity}.` : '');
+}
+document.addEventListener('pointerdown', (e) => {
+  const b = e.target.closest('[data-hold]');
+  if (!b || b.classList.contains('done')) return;
+  holdEl = b; b.classList.add('holding');
+  holdTimer = setTimeout(() => { holdTimer = null; completeHold(b); }, 700);
+});
+['pointerup', 'pointercancel'].forEach((ev) => document.addEventListener(ev, () => {
+  if (!holdTimer) return;
+  clearTimeout(holdTimer); holdTimer = null;
+  holdEl?.classList.remove('holding');
+  if (ev === 'pointerup') toast('Press and hold to complete');
+  holdEl = null;
+}));
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-hold]');
+  if (!b || justHeld || !b.classList.contains('done')) return;
+  const it = item(b.dataset.hold); it.done[today()] = false; save(); render(); toast('Marked as not done');
+});
+document.addEventListener('keydown', (e) => { const b = e.target.closest?.('[data-hold]'); if (b && (e.key === 'Enter' || e.key === ' ') && !b.classList.contains('done')) { e.preventDefault(); completeHold(b); } });
+document.addEventListener('contextmenu', (e) => { if (e.target.closest('[data-hold]')) e.preventDefault(); });
 
 /* ---------- boot ---------- */
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; render(); });

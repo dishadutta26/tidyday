@@ -11,7 +11,18 @@ You install it from a link with no app store needed (it's a PWA). Everything is 
   connecting with someone, and planning tomorrow. Each has a time and an optional reminder.
 - **Add in two steps:** type it, then pick when. Repeat, length, reminders and colour are under "More options".
 - **Repeating items:** daily, weekdays, weekly (pick days) or monthly.
-- **Week view:** see the whole week at a glance.
+- **Habits tab:** a step-by-step habit builder, inspired by the four laws of behaviour change in *Atomic Habits*
+  by James Clear (not affiliated).
+  - Start from who you want to become ("I am someone who keeps a calm, tidy home").
+  - Begin with a 2-minute version and grow through up to 4 levels. The app suggests levelling up after
+    14 strong days, and stepping back when a level feels too heavy.
+  - Plan when and where, stacked on an existing habit ("After I finish dinner, I will…"), with a visual cue.
+    Pair it with something you enjoy, and pick a small reward.
+  - Break bad habits with the reverse: make it invisible, unattractive, difficult and unsatisfying.
+  - Press and hold to complete, then see your streak, best streak, a 12-week grid and a "never miss twice" nudge.
+  - Ready-made plans: tidy home, grow tech skills, reading, fitness, sleep, calm, journaling, money,
+    less phone and less junk food. There's also a daily tip.
+- **Week view:** see the whole week at a glance (link under the day strip on Today).
 - **Daily review:** sort yesterday's unfinished tasks into Today, Tomorrow or Someday, or drop them.
 - **Focus timer:** Pomodoro (25/5), Quick, Deep work or Long, with breaks built in.
 - **Reminders:** at start or minutes, hours or a day before, with gentle sounds. There's also a "what's left"
