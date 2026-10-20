@@ -18,7 +18,7 @@ You install it from a link with no app store needed (it's a PWA). Everything is 
   check-in every few hours.
 - **When you have time:** low-priority chores that come back weekly or monthly.
 - **Someday:** a place to jot ideas and give them a day later.
-- **Look:** a soft cream-and-sage palette, light and dark themes, 4 accent colours, and icons and colours per item.
+- **Easy on the eyes:** a readability-first palette (all text passes WCAG AA, body text about 14:1). Light mode has a soft grey page with near-black text; dark mode is dark grey (not pure black) with off-white text. There are 4 accent colours, plus icons and colours per item.
 - **Private:** no account. You can back up or restore from a file, and export to your phone's calendar.
 
 ## Files

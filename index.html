@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tidy Day</title>
 <meta name="description" content="A calm daily planner: one timeline for tasks, habits and appointments, with reminders, focus timer and daily review. Your data stays on your phone.">
-<meta name="theme-color" content="#f2efe8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1a1e1d" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f7fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121418" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -15,23 +15,24 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Tidy Day">
 <style>
-/* Soft, low-glare palette: warm cream + sage in light, soft slate (never pure black) in dark. */
+/* Readability-first palette (all text passes WCAG AA; body text ~14:1).
+   Light: soft grey page, white cards, near-black text. Dark: dark grey (not pure black), off-white text. */
 :root{
-  --bg:#f2efe8;--card:#faf8f3;--ink:#2f3a36;--mute:#6c7872;--line:#e3ded3;
-  --accent:#5a8a72;--accent-ink:#fbfaf6;--warn:#a5633a;--done:#a3aaa5;
-  --shadow:0 1px 2px rgba(60,50,30,.05),0 6px 20px rgba(60,50,30,.05);color-scheme:light;
+  --bg:#f5f7fa;--card:#ffffff;--ink:#1c2430;--mute:#566170;--line:#e3e7ed;
+  --accent:#2a62c9;--accent-ink:#ffffff;--warn:#b4540f;--done:#8a94a1;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 4px 14px rgba(16,24,40,.05);color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme=light]){
-    --bg:#1a1e1d;--card:#222827;--ink:#d8dfdb;--mute:#929f99;--line:#323a37;
-    --accent:#8fc0a5;--accent-ink:#15211b;--warn:#deaa83;--done:#66716b;--shadow:none;color-scheme:dark;
+    --bg:#121418;--card:#1b1f25;--ink:#e4e7eb;--mute:#9ba3ae;--line:#2b313a;
+    --accent:#7aaefc;--accent-ink:#0d1726;--warn:#f2a466;--done:#6b7480;--shadow:none;color-scheme:dark;
   }
 }
 :root[data-theme=dark]{
-  --bg:#1a1e1d;--card:#222827;--ink:#d8dfdb;--mute:#929f99;--line:#323a37;
-  --accent:#8fc0a5;--accent-ink:#15211b;--warn:#deaa83;--done:#66716b;--shadow:none;color-scheme:dark;
+  --bg:#121418;--card:#1b1f25;--ink:#e4e7eb;--mute:#9ba3ae;--line:#2b313a;
+  --accent:#7aaefc;--accent-ink:#0d1726;--warn:#f2a466;--done:#6b7480;--shadow:none;color-scheme:dark;
 }
-:root{--soft:color-mix(in srgb,var(--accent) 15%,var(--card));--warn-soft:color-mix(in srgb,var(--warn) 14%,var(--card))}
+:root{--soft:color-mix(in srgb,var(--accent) 12%,var(--card));--warn-soft:color-mix(in srgb,var(--warn) 12%,var(--card))}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);
   font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
@@ -84,8 +85,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tcol{width:66px;flex:none;text-align:right;font-size:12px;color:var(--mute);padding-top:11px;font-variant-numeric:tabular-nums;line-height:1.3}
 .tcol b{display:block;color:var(--ink);font-size:13px;font-weight:700}
 .bc{flex:1;min-width:0;display:flex;align-items:center;gap:8px;padding:9px 8px 9px 10px;border-radius:16px;cursor:pointer;
-  background:color-mix(in srgb,var(--c) 17%,var(--card));border:1px solid color-mix(in srgb,var(--c) 32%,var(--line));border-left:5px solid var(--c)}
-.blk.done .bc{opacity:.62}
+  background:color-mix(in srgb,var(--c) 10%,var(--card));border:1px solid var(--line);border-left:5px solid var(--c)}
+.blk.done .bc{opacity:.7}
 .ico{font-size:21px;width:30px;text-align:center;flex:none}
 .gap{display:flex;gap:8px;align-items:center;margin:2px 0;color:var(--mute);font-size:13px}
 .gap .tcol{padding:0}
@@ -152,7 +153,7 @@ form.add input[name=text]{flex:1}
 .icongrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:4px}
 .icongrid button{height:44px;border:0;border-radius:10px;background:var(--bg);font-size:22px}
 .icongrid button.on{background:var(--soft);outline:2px solid var(--accent)}
-.titlebox{display:flex;gap:8px;align-items:center;padding:8px;border-radius:16px;background:color-mix(in srgb,var(--c) 17%,var(--card));border-left:5px solid var(--c)}
+.titlebox{display:flex;gap:8px;align-items:center;padding:8px;border-radius:16px;background:color-mix(in srgb,var(--c) 10%,var(--card));border-left:5px solid var(--c)}
 .titlebox input{border:0;background:none;font-size:18px;font-weight:600;padding:8px 4px}
 .icobtn{width:48px;height:48px;border:0;border-radius:12px;background:var(--card);font-size:24px;flex:none}
 
@@ -193,8 +194,8 @@ nav.tabs > div{display:flex;width:100%;max-width:560px}
 nav button{position:relative;flex:1;border:0;background:none;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;font-size:11px;font-weight:600}
 nav button.on{color:var(--accent)}
 nav .dotn{position:absolute;top:2px;left:calc(50% + 8px);min-width:16px;height:16px;border-radius:8px;background:var(--warn);color:var(--card);font-size:10px;line-height:16px;padding:0 4px}
-.fab{position:fixed;right:max(16px,calc(50% - 264px));bottom:calc(80px + env(safe-area-inset-bottom));z-index:6;width:58px;height:58px;border-radius:20px;border:0;
-  background:var(--accent);color:var(--accent-ink);box-shadow:0 8px 24px rgba(30,40,35,.22);display:grid;place-items:center}
+nav .navadd{flex:none;width:52px;height:52px;margin:-14px 6px 0;border-radius:18px;background:var(--accent);color:var(--accent-ink);
+  box-shadow:0 6px 18px rgba(16,24,40,.22);display:grid;place-items:center;padding:0}
 .sheet{position:fixed;inset:0;z-index:30;display:flex;align-items:flex-end;justify-content:center}
 .sheet-bg{position:absolute;inset:0;background:rgba(18,24,21,.42)}
 .sheet-panel{position:relative;width:100%;max-width:560px;max-height:92vh;overflow:auto;background:var(--card);border-radius:24px 24px 0 0;
@@ -220,10 +221,10 @@ nav .dotn{position:absolute;top:2px;left:calc(50% + 8px);min-width:16px;height:1
 <div id="ob" hidden></div>
 <div id="app" hidden>
   <main class="wrap" id="view"></main>
-  <button class="fab" id="fab" data-a="add" aria-label="Add"><span data-icon="plus"></span></button>
   <nav class="tabs" aria-label="Sections"><div>
     <button data-a="tab" data-id="today"><span data-icon="sun"></span>Today</button>
     <button data-a="tab" data-id="week"><span data-icon="cal"></span>Week</button>
+    <button class="navadd" data-a="add" aria-label="Add something"><span data-icon="plus"></span></button>
     <button data-a="tab" data-id="focus"><span data-icon="timer"></span>Focus</button>
     <button data-a="tab" data-id="me"><span data-icon="user"></span>Me</button>
   </div></nav>
@@ -279,9 +280,10 @@ const I = {
 };
 
 /* Muted, low-saturation task colours. */
-const COLORS = { sage: '#86b39b', sky: '#8fb2d4', lavender: '#b2a5d6', peach: '#e2b193', butter: '#d6c07c', rose: '#d99ea9', teal: '#7fb8b2', slate: '#a2acb5' };
-const ACCENTS = { sage: ['#5a8a72', '#8fc0a5'], ocean: ['#4c7896', '#8fb9d6'], lavender: ['#6d619e', '#b4a8e0'], clay: ['#99654a', '#e0ae92'] };
-const col = (c) => COLORS[c] || COLORS.sage;
+const COLORS = { blue: '#5b9bea', green: '#4fb882', purple: '#9b84dd', orange: '#ee9a52', yellow: '#e2bb3d', pink: '#e9829f', teal: '#3fb5aa', grey: '#98a3b0' };
+const ACCENTS = { blue: ['#2a62c9', '#7aaefc'], teal: ['#0f7068', '#5fcfc1'], violet: ['#6a4cc0', '#b39cff'], green: ['#2d7a4c', '#7ccf9a'] };
+const OLD_COLORS = { sage: 'green', sky: 'blue', lavender: 'purple', peach: 'orange', butter: 'yellow', rose: 'pink', slate: 'grey' };
+const col = (c) => COLORS[c] || COLORS[OLD_COLORS[c]] || COLORS.blue;
 const ICONS = ['📝', '✅', '💧', '🏋️', '🏃', '⚽', '🏸', '🚶', '🧘', '🧴', '🥚', '🍎', '🥗', '🍽️', '☕', '💊', '💬', '📞', '👪', '❤️', '📚', '💻', '💼', '🧠', '📧', '🧹', '🧺', '🛒', '💳', '🪴', '🐶', '🦷', '🏥', '✂️', '🎂', '✈️', '🚗', '🎵', '🎨', '🎮', '🛏️', '🌙', '☀️', '⭐'];
 const DURS = [0, 15, 30, 45, 60, 90, 120, 180];
 const REMS = [[0, 'At start'], [5, '5 min before'], [10, '10 min'], [15, '15 min'], [30, '30 min'], [60, '1 hour'], [1440, '1 day']];
@@ -292,15 +294,15 @@ const MODES = { pomo: { n: 'Pomodoro', w: 25, b: 5 }, quick: { n: 'Quick', w: 15
 
 /* ---------- data ---------- */
 const CORE = [
-  ['water', '💧', 'Drink water', '09:00', 5, 'sky', true, { goal: 8, every: 2, until: '21:00', note: 'Tap the circle for each glass' }],
-  ['workout', '🏋️', 'Workout with weight training', '07:00', 45, 'sage', true],
+  ['water', '💧', 'Drink water', '09:00', 5, 'blue', true, { goal: 8, every: 2, until: '21:00', note: 'Tap the circle for each glass' }],
+  ['workout', '🏋️', 'Workout with weight training', '07:00', 45, 'green', true],
   ['cardio', '🏃', 'Cardio or sports', '18:00', 30, 'teal', true],
-  ['selfcare', '🧴', 'Self-care routine', '21:30', 20, 'lavender', true],
-  ['protein', '🥚', 'Protein-rich meal', '13:00', 30, 'peach', true],
-  ['fruit', '🍎', 'At least 1 fruit', '16:00', 0, 'rose', false],
-  ['quiet', '🧘', 'Personal quiet time', '06:30', 15, 'lavender', false],
-  ['connect', '💬', 'Connect with someone who matters', '20:00', 10, 'butter', true, { note: 'At least 5 minutes' }],
-  ['plan', '📝', 'Plan tomorrow', '22:00', 10, 'slate', true, { note: 'Ticks itself once tomorrow has a task' }],
+  ['selfcare', '🧴', 'Self-care routine', '21:30', 20, 'purple', true],
+  ['protein', '🥚', 'Protein-rich meal', '13:00', 30, 'orange', true],
+  ['fruit', '🍎', 'At least 1 fruit', '16:00', 0, 'pink', false],
+  ['quiet', '🧘', 'Personal quiet time', '06:30', 15, 'purple', false],
+  ['connect', '💬', 'Connect with someone who matters', '20:00', 10, 'yellow', true, { note: 'At least 5 minutes' }],
+  ['plan', '📝', 'Plan tomorrow', '22:00', 10, 'grey', true, { note: 'Ticks itself once tomorrow has a task' }],
 ];
 const coreHabits = () => CORE.map(([id, icon, title, time, dur, color, on, extra]) => ({
   id, kind: 'habit', core: true, icon, title, time, dur, color, date: today(), repeat: { t: 'daily', days: [] }, rem: on ? [0] : [], done: {}, note: '', ...(extra || {}),
@@ -310,7 +312,7 @@ const CHORE_SUGGESTIONS = [['🧹', 'House cleaning', 7], ['🧺', 'Laundry', 7]
 const defaults = () => ({
   v: 2, profile: null, items: coreHabits(), chores: [], fired: {}, lastDay: null, focusLog: {},
   focus: { mode: 'pomo', phase: 'idle', endAt: 0, left: 0, paused: false, taskId: '', rounds: 0, roundsDay: '' },
-  settings: { theme: 'auto', accent: 'sage', sound: 'chime', checkinHours: 3, dayStart: '07:00', dayEnd: '22:00', autoCarry: false, hideInstall: false },
+  settings: { theme: 'auto', accent: 'blue', sound: 'chime', checkinHours: 3, dayStart: '07:00', dayEnd: '22:00', autoCarry: false, hideInstall: false },
 });
 
 /* Bring data from the first version of the app forward. */
@@ -320,7 +322,7 @@ function migrate(o) {
   n.settings.checkinHours = o.settings?.checkinHours ?? 3;
   n.items = (o.habits || []).map((h) => {
     const base = coreHabits().find((c) => c.id === h.id);
-    const it = { ...(base || { kind: 'habit', color: 'sage', dur: 15, repeat: { t: 'daily', days: [] }, date: today(), note: '' }),
+    const it = { ...(base || { kind: 'habit', color: 'blue', dur: 15, repeat: { t: 'daily', days: [] }, date: today(), note: '' }),
       id: h.id, icon: h.icon, title: h.name, time: h.time || '', rem: h.reminder ? [0] : [], core: !h.custom, done: {} };
     if (h.goal) Object.assign(it, { goal: h.goal, every: h.repeatHours || 0, until: h.endTime || '21:00' });
     return it;
@@ -328,10 +330,10 @@ function migrate(o) {
   for (const d in o.log || {}) for (const id in o.log[d]) { const it = n.items.find((x) => x.id === id); if (it) it.done[d] = o.log[d][id]; }
   for (const d in o.todos || {}) (o.todos[d] || []).forEach((x) => {
     if (x.movedTo) return;
-    n.items.push({ id: x.id, kind: 'task', icon: '📝', color: 'sage', title: x.title, date: d, time: x.time || '', dur: 30, repeat: { t: 'none', days: [] },
+    n.items.push({ id: x.id, kind: 'task', icon: '📝', color: 'blue', title: x.title, date: d, time: x.time || '', dur: 30, repeat: { t: 'none', days: [] },
       rem: x.reminder ? [0] : [], done: x.done ? { [d]: true } : {}, note: '', carried: x.carried || 0, from: x.from || '' });
   });
-  (o.appts || []).forEach((a) => n.items.push({ id: a.id, kind: 'appt', icon: '📅', color: 'peach', title: a.title, date: a.date, time: a.time, dur: 60,
+  (o.appts || []).forEach((a) => n.items.push({ id: a.id, kind: 'appt', icon: '📅', color: 'orange', title: a.title, date: a.date, time: a.time, dur: 60,
     repeat: a.repeat === 'weekly' ? { t: 'weekly', days: [dow(a.date)] } : { t: 'none', days: [] }, rem: a.reminder ? [a.before || 0] : [], done: a.doneDates || {}, note: '' }));
   n.chores = (o.low || []).map((x) => ({ id: x.id, icon: '', title: x.title, every: x.repeat || 0, time: x.time || '', rem: !!x.reminder, done: x.done || null }));
   n.lastDay = o.lastDay;
@@ -408,10 +410,10 @@ function applyTheme() {
   const root = document.documentElement, th = S.settings.theme;
   if (th === 'auto') root.removeAttribute('data-theme'); else root.dataset.theme = th;
   const dark = th === 'dark' || (th === 'auto' && darkMQ.matches);
-  const [l, d] = ACCENTS[S.settings.accent] || ACCENTS.sage;
+  const [l, d] = ACCENTS[S.settings.accent] || ACCENTS.blue;
   root.style.setProperty('--accent', dark ? d : l);
-  root.style.setProperty('--accent-ink', dark ? '#15211b' : '#fbfaf6');
-  document.querySelectorAll('meta[name=theme-color]').forEach((m) => m.setAttribute('content', dark ? '#1a1e1d' : '#f2efe8'));
+  root.style.setProperty('--accent-ink', dark ? '#0d1726' : '#ffffff');
+  document.querySelectorAll('meta[name=theme-color]').forEach((m) => m.setAttribute('content', dark ? '#121418' : '#f5f7fa'));
 }
 darkMQ.addEventListener?.('change', applyTheme);
 
@@ -789,7 +791,7 @@ function vMe() {
 let D = null, showIcons = false, moreOpen = false;
 function openSheet(it, preset = {}) {
   D = it ? JSON.parse(JSON.stringify(it)) : {
-    id: null, kind: 'task', title: '', icon: '📝', color: 'sage', date: selDay, time: '', dur: 30,
+    id: null, kind: 'task', title: '', icon: '📝', color: 'blue', date: selDay, time: '', dur: 30,
     repeat: { t: 'none', days: [] }, rem: [0], done: {}, note: '', ...preset,
   };
   D._new = !it; showIcons = false; moreOpen = false;
@@ -885,7 +887,6 @@ function render() {
   }
   $('#ob').hidden = true; $('#app').hidden = false;
   $('#view').innerHTML = { today: vToday, week: vWeek, focus: vFocus, me: vMe }[tab]();
-  $('#fab').hidden = tab === 'focus' || tab === 'me';
   document.querySelectorAll('nav [data-a=tab]').forEach((b) => b.classList.toggle('on', b.dataset.id === tab));
 }
 document.querySelectorAll('[data-icon]').forEach((el) => { el.innerHTML = I[el.dataset.icon]; });
@@ -936,7 +937,7 @@ const A = {
   shiftDay(n) { selDay = addDays(selDay, +n); render(); },
   shiftWeek(n) { weekStart = +n ? addDays(weekStart || startOfWeek(today()), +n) : null; render(); },
   openDay(id) { selDay = id; tab = 'today'; render(); scrollTo(0, 0); },
-  add() { openSheet(null); },
+  add() { if (tab !== 'week') tab = 'today'; render(); openSheet(null); },
   addAt(time, d) { openSheet(null, { date: d, time }); },
   addHabit() { openSheet(null, { kind: 'habit', icon: '⭐', date: today(), time: '08:00', dur: 15, repeat: { t: 'daily', days: [] } }); moreOpen = true; renderSheet(); },
   edit(id) { const it = item(id); if (it) openSheet(it); },
@@ -992,7 +993,7 @@ const A = {
     D.kind = k;
     if (k === 'habit' && D.repeat.t === 'none') D.repeat = { t: 'daily', days: [] };
     if (k === 'habit' && !D.date) D.date = today();
-    if (k === 'appt') { D.rem = [60]; if (D.icon === '📝') D.icon = '📅'; if (D.color === 'sage') D.color = 'peach'; if (!D.date) D.date = selDay; }
+    if (k === 'appt') { D.rem = [60]; if (D.icon === '📝') D.icon = '📅'; if (D.color === 'blue') D.color = 'orange'; if (!D.date) D.date = selDay; }
     renderSheet();
   },
   setColor(c) { D.color = c; renderSheet(); },
@@ -1056,7 +1057,7 @@ const FORMS = {
   saveItem: saveDraft,
   capture(f) {
     const text = f.elements.text.value.trim(); if (!text) return;
-    S.items.push({ id: uid(), kind: 'task', title: text, icon: '📝', color: 'sage', date: null, time: '', dur: 30, repeat: { t: 'none', days: [] }, rem: [0], done: {}, note: '' });
+    S.items.push({ id: uid(), kind: 'task', title: text, icon: '📝', color: 'blue', date: null, time: '', dur: 30, repeat: { t: 'none', days: [] }, rem: [0], done: {}, note: '' });
     save(); render(); $('form[data-f=capture] input')?.focus();
   },
   addChore(f) {
