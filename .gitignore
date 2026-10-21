@@ -1,1 +1,4 @@
 .DS_Store
+build/
+*.p12
+*.keystore

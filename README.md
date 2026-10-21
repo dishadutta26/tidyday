@@ -32,25 +32,56 @@ You install it from a link with no app store needed (it's a PWA). Everything is 
 - **Track amounts:** pages, minutes, reps, km, glasses and more.
 - **Busy-day tiny version:** complete level 1 just for today. Each completion records which level you did.
 - **Rest days and pause:** neither breaks your streak. Progress counts only scheduled days.
-- **Routines:** link a habit to run right after another one.
+- **Routines:** habits are grouped into Morning, Afternoon and Evening. "▶ Start routine" plays them one at a time,
+  with a timer for timed habits and a mood check at the end. You can also link a habit to run right after another.
+- **Challenges:** turn any habit into a 7, 21 or 30-day challenge, with progress and a celebration at the end.
+- **Progress:** a 30-day completion chart, your strongest weekday, rates and streaks per habit, and your mood over time.
+- **Notes:** a short note per habit per day, to remember how it went.
+- **Vacation mode:** pause every habit until a date. Streaks are safe.
+- **Celebrations:** confetti when you finish every habit for the day, a routine, or a challenge.
 - **"What got in the way?"** after a missed day: Forgot, No time, Too hard or Not for me. Each gets a specific fix.
 - **Weekly reflection:** what worked, what didn't, and one change for next week.
   That change then shows on the Habits tab all week.
 - **Goals with milestones:** link habits and tasks to them.
 
 ## Reminders, calendar and devices
-- Reminders work while the app is open or running in the background. **Phones may pause web apps**, so the Me tab
-  shows how many reminders depend on that. "Add to phone calendar" (all items, or one from its edit screen)
-  creates calendar alarms that ring even when Tidy Day is closed.
+- **Remind again:** any timed item can keep reminding you every 30 minutes, hour, 2 hours or 3 hours until a set time,
+  for example water every hour from 9 AM to 9 PM. It stops for the day once you tick it done.
+- **Android app (recommended on Android):** real phone alarms that ring **even when the app is closed**.
+  Download it from the website or from the [latest release](https://github.com/dishadutta26/tidyday/releases/latest).
+  No Play Store and no account. Alarms are rebuilt for the next 7 days every time something changes.
+- **Website / iPhone:** a website can't ring once it's closed, so reminders work while it's open.
+  "Add to phone calendar" (all items, or one from its edit screen) creates calendar alarms that always ring.
 - **Import a calendar file** (.ics from Google, Outlook or Apple Calendar). Repeats are kept and duplicates are skipped.
 - **Moving devices:** "Send backup to another device", then Restore on the other one. There's no server, so there's
   no automatic sync. That's what keeps the data private on your phone.
 
 ## Files
-`index.html` (the whole app), `manifest.webmanifest` (install info), `sw.js` (offline + notification taps), `icons/`.
+- `index.html`: the whole app.
+- `manifest.webmanifest`: install info.
+- `sw.js`: offline support and notification taps.
+- `icons/`: app icons.
+- `android-shell/`: Android icons, splash and Capacitor config.
+- `.github/workflows/android.yml`: builds the Android app on every push.
+
+## Android app: how it's built
+GitHub Actions wraps the same `index.html` with [Capacitor](https://capacitorjs.com/) and its local-notifications
+plugin, signs it, and publishes `TidyDay.apk` as a GitHub Release. Each push that changes the app makes a new
+version, and the app shows an "update available" banner.
+
+**One-time setup:** the build needs the signing key stored as repository secrets. The key lives outside the repo, in
+`../tidyday-android-signing/`. Keep that folder safe, because updates must be signed with the same key. From this
+folder, run:
+
+```
+base64 -i ../tidyday-android-signing/release.p12 | gh secret set ANDROID_KEYSTORE_B64
+gh secret set ANDROID_KEYSTORE_PASSWORD < ../tidyday-android-signing/password.txt
+printf tidyday | gh secret set ANDROID_KEY_ALIAS
+gh workflow run android.yml
+```
 
 ## Install on a phone
-- **Android (Chrome):** open the link and tap **Install app**.
+- **Android:** tap **Download Android app** on the website, open the file and install. You can also use Chrome's **Install app** for the web version.
 - **iPhone (Safari):** tap Share → **Add to Home Screen**, then open it from the home screen and allow notifications.
 
 ## Updating

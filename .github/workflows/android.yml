@@ -1,0 +1,140 @@
+# Builds the Tidy Day Android app (the same web app wrapped with Capacitor, plus real phone alarms)
+# and publishes it as a GitHub Release. The website links to:
+#   https://github.com/dishadutta26/tidyday/releases/latest/download/TidyDay.apk
+name: Android app
+
+on:
+  push:
+    branches: [main]
+    paths: ['index.html', 'manifest.webmanifest', 'icons/**', 'android-shell/**', '.github/workflows/android.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-build
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      BUILD: ${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check signing secrets
+        id: check
+        env:
+          KS: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+        run: |
+          if [ -z "$KS" ]; then
+            echo "::notice::Skipping the Android build: add the signing secrets first (see README, Android app)."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.ok == 'true'
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        if: steps.check.outputs.ok == 'true'
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: android-actions/setup-android@v3
+        if: steps.check.outputs.ok == 'true'
+
+      - name: Prepare web assets
+        if: steps.check.outputs.ok == 'true'
+        run: |
+          mkdir -p build/www
+          cp index.html manifest.webmanifest build/www/
+          cp -r icons build/www/
+          echo "{\"build\": $BUILD, \"version\": \"1.0.$BUILD\"}" > build/www/version.json
+          cp android-shell/capacitor.config.json build/
+
+      - name: Create Capacitor Android project
+        if: steps.check.outputs.ok == 'true'
+        working-directory: build
+        run: |
+          npm init -y > /dev/null
+          npm install --no-audit --no-fund @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7 @capacitor/local-notifications@7
+          # Load the Capacitor runtime + notifications plugin in the app build only (not on the website).
+          # (If these files ever move, the app falls back to Capacitor's built-in bridge.)
+          if cp node_modules/@capacitor/core/dist/capacitor.js www/capacitor.js && cp node_modules/@capacitor/local-notifications/dist/plugin.js www/ln-plugin.js; then
+            sed -i '0,/<script>/s//<script src="capacitor.js"><\/script>\n<script src="ln-plugin.js"><\/script>\n<script>/' www/index.html
+            grep -c 'ln-plugin.js' www/index.html
+          else
+            echo "::warning::Capacitor JS files not found; using the native bridge only."
+          fi
+          npx cap add android
+          npx cap sync android
+
+      - name: App icon, splash, permissions and version
+        if: steps.check.outputs.ok == 'true'
+        working-directory: build/android
+        run: |
+          cp -r ../../android-shell/res/* app/src/main/res/
+          pip install --quiet pillow
+          python3 ../../android-shell/splash.py app/src/main/res ../../icons/icon-512.png
+          # Exact alarms so reminders ring on time even when the app is closed.
+          sed -i 's#<uses-permission android:name="android.permission.INTERNET" />#<uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />\n    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />\n    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />#' app/src/main/AndroidManifest.xml
+          grep -c USE_EXACT_ALARM app/src/main/AndroidManifest.xml
+          sed -i "s/versionCode 1$/versionCode $BUILD/; s/versionName \"1.0\"/versionName \"1.0.$BUILD\"/" app/build.gradle
+          grep -E "versionCode|versionName" app/build.gradle
+
+      - name: Signing config
+        if: steps.check.outputs.ok == 'true'
+        working-directory: build/android
+        env:
+          KS: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+        run: |
+          echo "$KS" | base64 -d > app/release.p12
+          cat >> app/build.gradle <<'EOF'
+
+          android {
+              signingConfigs {
+                  release {
+                      storeFile file('release.p12')
+                      storeType 'pkcs12'
+                      storePassword System.getenv('KS_PASS')
+                      keyAlias System.getenv('KS_ALIAS')
+                      keyPassword System.getenv('KS_PASS')
+                  }
+              }
+              buildTypes {
+                  release {
+                      signingConfig signingConfigs.release
+                      minifyEnabled false
+                  }
+              }
+          }
+          EOF
+
+      - name: Build APK
+        if: steps.check.outputs.ok == 'true'
+        working-directory: build/android
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KS_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+          ls -l app/build/outputs/apk/release/
+
+      - name: Publish release
+        if: steps.check.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp build/android/app/build/outputs/apk/release/app-release.apk TidyDay.apk
+          gh release create "v1.0.$BUILD" TidyDay.apk \
+            --title "Tidy Day for Android 1.0.$BUILD" \
+            --notes "Download **TidyDay.apk** below and open it on your Android phone to install or update. Reminders ring even when the app is closed. Built from ${GITHUB_SHA::7}." \
+            --latest

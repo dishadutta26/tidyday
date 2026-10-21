@@ -1,0 +1,14 @@
+{
+  "appId": "io.github.dishadutta26.tidyday",
+  "appName": "Tidy Day",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#f5f7fa"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon",
+      "iconColor": "#2a62c9"
+    }
+  }
+}
